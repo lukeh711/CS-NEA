@@ -24,3 +24,16 @@ Abstraction, OOP, Decomposition, Algorithmic thinking
 Potential GUIs:
 Python - Pygame/pyQT
 C# - Unity/Godot/Raylib-cs
+-> Pygame to use for actual NEA
+
+~~Possible issues~~
+Collision Y/N?
+Difficult to show planets at a realistic scale due to large gaps and small planets
+
+~~TODO~~
+- improve stakeholders section
+- add third example program
+- add ESSENTIAL FEATURES page
+- add at least 3 essential features
+- add LIMITATIONS page
+- add at least 1 limitation
