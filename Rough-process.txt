@@ -1,0 +1,26 @@
+~~~INSPO~~~
+Universe sandbox - https://universesandbox.com/
+SpaceSim - https://store.steampowered.com/app/4055380/SpaceSim__Astrophysical_Simulation_Software/
+Kerbal Space program - https://www.kerbalspaceprogram.com/
+phEt - https://phet.colorado.edu/
+Juno new origins - https://www.simplerockets.com/
+
+
+~~~Problem~~~
+>People finding it hard to visualise the effects of gravity and how orbits work
+>Teachers not having the tools to illustrate their points during teaching
+>People finding astrophysics too difficult / aren't interested in it
+
+~~~Solution~~~
+My astrophysics simulator will:
+>Help people to visualise gravity and large scale forces
+>Act as a tool to help teachers demonstrate the forces involved in astronomical phenomena
+>Provide a tool to help people be interested in physics and the fundamental forces behind it
+
+~~Computational Methods~~
+Abstraction, OOP, Decomposition, Algorithmic thinking
+
+~~Tools Used~~
+Potential GUIs:
+Python - Pygame/pyQT
+C# - Unity/Godot/Raylib-cs
