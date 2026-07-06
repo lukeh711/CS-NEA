@@ -30,10 +30,15 @@ C# - Unity/Godot/Raylib-cs
 Collision Y/N?
 Difficult to show planets at a realistic scale due to large gaps and small planets
 
+~~Ideas~~
+-supernovae, weird situations
+distance calcs, light years calculator - ruler?
+life % chance - stats of the surface on the planet
+spaceships
+collisions? - splits up into pieces
+Unrestricted - no limits on what you can do#
+
+
 ~~TODO~~
-- improve stakeholders section
-- add third example program
-- add ESSENTIAL FEATURES page
-- add at least 3 essential features
-- add LIMITATIONS page
-- add at least 1 limitation
+- complete limitations
+- complete success criteria

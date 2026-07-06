@@ -30,7 +30,7 @@ class Renderer:
 
     def renderCircleXYR(self, coordsIn, radiusIn, colourIn):
         x = coordsIn[0]
-        y = coordsIn[0]
+        y = coordsIn[1]
 
         pygame.draw.circle(screen, colourIn, (x, y), radiusIn)
         
@@ -53,7 +53,9 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_w:
+            if event.key == pygame.K_ESCAPE:
+                running = False
+            elif event.key == pygame.K_w:
                 upKeyPressed = True
             elif event.key == pygame.K_s:
                 downKeyPressed = True
@@ -71,19 +73,21 @@ while running:
             elif event.key == pygame.K_d:
                 rightKeyPressed = False
 
-    screen.fill("purple")
+    screen.fill("purple")   #clear screen
     
     # Game rendering + game loop here
-    tempX = 500
-    tempY = 500
+    tempX = 600
+    tempY = 400
     if upKeyPressed:
-        tempY += 1
+        tempY -= 10
     elif downKeyPressed:
-        tempY -= 1
+        tempY += 10
     elif leftKeyPressed:
-        tempX -= 1
+        tempX -= 10
     elif rightKeyPressed:
-        tempX += 1
+        tempX += 10
+
+    screen.fill("black")    #draw bg
     
     screenRenderer.renderCircleXYR([tempX, tempY], 10, (255, 255, 255))
 
