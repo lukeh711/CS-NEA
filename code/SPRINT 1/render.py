@@ -9,3 +9,9 @@ class Render:
     def circle(self, position, radius, colour):
         centre = position + pygame.Vector2(radius, radius)
         pygame.draw.circle(self.screen, colour, centre, radius)
+
+    def planet(self, planet):
+        position = planet.position
+        radius = planet.radius
+        colour = planet.colour
+        self.circle(position, radius, colour)

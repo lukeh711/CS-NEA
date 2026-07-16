@@ -1,12 +1,13 @@
 import pygame
 from render import *
 from objects import *
+from simulation import *
 
 # initialise pygame screen, and camera and renderer objects
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
-camera = Camera(0, 0, 1280, 720)
+camera = Camera(pygame.Vector2(0, 0), 1280, 720)
 render = Render(camera, screen)
 
 
@@ -19,11 +20,14 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
+                
 
+    # clear last screen
     screen.fill("black")
 
-    render.circle((500, 200), 50, "red")
+    simulationLogic(screen, camera, render)    
 
+    # next frame
     pygame.display.flip()
     clock.tick(60)
 
