@@ -36,9 +36,10 @@ distance calcs, light years calculator - ruler?
 life % chance - stats of the surface on the planet
 spaceships
 collisions? - splits up into pieces
-Unrestricted - no limits on what you can do#
+Unrestricted - no limits on what you can do
+
+rendering different areas of the screen only when needed
 
 
 ~~TODO~~
-- complete limitations
-- complete success criteria
+- finish stuff
