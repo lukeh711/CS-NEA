@@ -5,33 +5,65 @@ from objects import *
 class Game:
     # attributes
     running = True
-
-    
-    def __init__(self):
-        pass
-
+    keyDict = {
+        "space": False,
+        "oldSpace": False,
+        "left": False,
+        "oldLeft": False,
+        "right": False,
+        "oldRight": False,
+        "up": False,
+        "oldUp": False,
+        "down": False,
+        "oldDown": False
+    }
 
     # methods
-    def handleEvents(self): #1
+    def handleEvents(self): #--1--#
+        #shifting all current values to old values
+        keyList = list(self.keyDict.keys())
+        for i in range(0, len(keyList), 2):
+            self.keyDict[keyList[i+1]] = self.keyDict[keyList[i]]
+
         for event in pygame.event.get():
+            # closing nicely when X button pressed
             if event.type == pygame.QUIT:
                 self.running = False
+            
+            #getting keyboard inputs
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    self.running = False 
-                if event.key == pygame.K_SPACE:
-                    spaceKeyPressed = True
+                if event.key == pygame.K_ESCAPE:                    #escape
+                    # TEMPish: closes when escape is pressed
+                    self.running = False
+                if event.key == pygame.K_SPACE:                     #space
+                    spaceKeyPressedNow = True
+                    if self.spaceKey == 0 and spaceKeyPressedNow:
+                        self.spaceKey = 1
+                    else:
+                        self.spaceKey = 2
+                if event.key == pygame.K_LEFT:                      #Left arrow
+                    spaceKeyPressedNow = True
+                    if self.spaceKey == 0 and spaceKeyPressedNow:
+                        self.spaceKey = 1
+                    else:
+                        self.spaceKey = 2
+                if event.key == pygame.K_RIGHT:                     #Right arrow
+                    spaceKeyPressedNow = True
+                    if self.spaceKey == 0 and spaceKeyPressedNow:
+                        self.spaceKey = 1
+                    else:
+                        self.spaceKey = 2
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:
-                    spaceKeyPressed = False
+                    spaceKeyPressedNow = False
 
-    def update(self):   #2
+    def update(self):   #--2--#
         # all logic here
         running = self.keyPressDetection()
     
 
-    def draw(self):     #3
+    def draw(self):     #--3--#
         # draw stuff here
         pygame.display.flip()
 
