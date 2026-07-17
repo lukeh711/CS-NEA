@@ -3,7 +3,6 @@ from render import *
 from objects import *
 
 class Game:
-    # attributes
     running = True
     keyDict = {
         "space": False,
@@ -17,10 +16,14 @@ class Game:
         "down": False,
         "oldDown": False
     }
+    screen = pygame.display.set_mode((1280, 720))
+    camera = Camera(pygame.Vector2(0, 0), 1280, 720)
+    render = Render(camera, screen)
 
-    # methods
+
+    # keyboard inputs
     def handleEvents(self): #--1--#
-        #shifting all current values to old values
+        # shifting all current values to old values
         keyList = list(self.keyDict.keys())
         for i in range(0, len(keyList), 2):
             self.keyDict[keyList[i+1]] = self.keyDict[keyList[i]]
@@ -30,52 +33,38 @@ class Game:
             if event.type == pygame.QUIT:
                 self.running = False
             
-            #getting keyboard inputs
+            # getting keyboard inputs
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:                    #escape
+                if event.key == pygame.K_ESCAPE:                    # escape
                     # TEMPish: closes when escape is pressed
                     self.running = False
-                if event.key == pygame.K_SPACE:                     #space
-                    spaceKeyPressedNow = True
-                    if self.spaceKey == 0 and spaceKeyPressedNow:
-                        self.spaceKey = 1
-                    else:
-                        self.spaceKey = 2
-                if event.key == pygame.K_LEFT:                      #Left arrow
-                    spaceKeyPressedNow = True
-                    if self.spaceKey == 0 and spaceKeyPressedNow:
-                        self.spaceKey = 1
-                    else:
-                        self.spaceKey = 2
-                if event.key == pygame.K_RIGHT:                     #Right arrow
-                    spaceKeyPressedNow = True
-                    if self.spaceKey == 0 and spaceKeyPressedNow:
-                        self.spaceKey = 1
-                    else:
-                        self.spaceKey = 2
+                if event.key == pygame.K_SPACE:                     # space
+                    self.keyDict["space"] = True
+                if event.key == pygame.K_LEFT:                      # left arrow
+                    self.keyDict["left"] = True
+                if event.key == pygame.K_RIGHT:                     # right arrow
+                    self.keyDict["right"] = True
+                if event.key == pygame.K_UP:                        # up arrow
+                    self.keyDict["up"] = True
+                if event.key == pygame.K_DOWN:                      # down arrow
+                    self.keyDict["down"] = True
 
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_SPACE:
-                    spaceKeyPressedNow = False
+    # main code
+    def update(self, dt):   #--2--#
 
-    def update(self):   #--2--#
-        # all logic here
-        running = self.keyPressDetection()
-    
+        if self.keyDict["left"]:
+            pass
 
+        # simulation.tick()
+        self.testPlanet = Planet(positionIn=pygame.Vector2(1000,500), radiusIn=50, massIn=5.972e24)
+
+    # rendering code
     def draw(self):     #--3--#
+        # clear last screen
+        self.render.fill("black")
+
         # draw stuff here
+        self.render.planet(self.testPlanet)
+
+        # send the new frame to the screen
         pygame.display.flip()
-
-
-    def keyPressDetection(self):
-        runningLocal = True
-        return runningLocal
-
-
-    def simulationLogic(self, screen, camera, render):    
-        # initialise objects
-        testPlanet = Planet(positionIn=pygame.Vector2(1000,500), radiusIn=50, massIn=5.972e24)
-
-        # rendering
-        render.planet(testPlanet)

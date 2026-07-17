@@ -10,7 +10,7 @@ class PhysicsObject:
         self.velocity = velocityIn                  # (optional) velocity vector
         self.acceleration = accelerationIn          # (optional) acceleration vector
     
-    
+
 
 # PLANET
 class Planet(PhysicsObject):
@@ -21,7 +21,10 @@ class Planet(PhysicsObject):
 
 # CAMERA
 class Camera:
-    def __init__(self, positionIn, widthIn, heightIn):
+    def __init__(self, positionIn, widthIn, heightIn, forceIn=pygame.Vector2(0, 0), velocityIn=pygame.Vector2(0, 0), accelerationIn=pygame.Vector2(0, 0)):
         self.position = positionIn
         self.width = widthIn
         self.height = heightIn
+    
+    def move(self, positionIn):
+        self.position += positionIn

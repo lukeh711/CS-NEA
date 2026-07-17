@@ -6,6 +6,10 @@ class Render:
         self.camera = cameraIn
         self.screen = screenIn
 
+    # just draws shapes on the screen given the vector coords of those shapes
+    def fill(self, colour):
+        self.screen.fill(colour)
+    
     def circle(self, position, radius, colour):
         centre = position + pygame.Vector2(radius, radius)
         pygame.draw.circle(self.screen, colour, centre, radius)
@@ -15,3 +19,4 @@ class Render:
         radius = planet.radius
         colour = planet.colour
         self.circle(position, radius, colour)
+    
