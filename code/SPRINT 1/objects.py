@@ -9,6 +9,8 @@ class PhysicsObject:
         self.force = forceIn                        # (optional) force vector
         self.velocity = velocityIn                  # (optional) velocity vector
         self.acceleration = accelerationIn          # (optional) acceleration vector
+    
+    
 
 # PLANET
 class Planet(PhysicsObject):

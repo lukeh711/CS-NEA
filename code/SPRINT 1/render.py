@@ -1,5 +1,5 @@
 import pygame
-# NOTE: v limited imports here to stop circular imports
+# NOTE: limited imports here to stop circular imports
 
 class Render:
     def __init__(self, cameraIn, screenIn):
