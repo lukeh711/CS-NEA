@@ -1,5 +1,8 @@
 import pygame
+from objects import *
 # NOTE: limited imports here to stop circular imports
+
+# TODO: add zoom compatabiltiy when rendering
 
 class Render:
     def __init__(self, cameraIn, screenIn):
@@ -10,7 +13,8 @@ class Render:
     def fill(self, colour):
         self.screen.fill(colour)
     
-    def circle(self, position, radius, colour):
+    def circle(self, positionIn, radius, colour):
+        position = positionIn - self.camera.displacement
         centre = position + pygame.Vector2(radius, radius)
         pygame.draw.circle(self.screen, colour, centre, radius)
 
@@ -20,3 +24,6 @@ class Render:
         colour = planet.colour
         self.circle(position, radius, colour)
     
+    def render(self, objectIn):
+        if isinstance(objectIn, Planet):
+            self.planet(objectIn)

@@ -4,7 +4,7 @@ from game import *
 # initialise pygame screen, and camera and renderer objects
 pygame.init()
 clock = pygame.time.Clock()
-dt = clock.tick(60)
+dt = 0
 game = Game()
 
 
@@ -19,6 +19,6 @@ while game.running:
     game.draw()
 
     # next frame
-    dt = clock.tick(60)
+    dt = clock.tick(1) / 1000
 
 pygame.quit()
