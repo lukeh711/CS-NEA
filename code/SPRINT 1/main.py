@@ -11,6 +11,7 @@ game = Game()
 # main game loop
 running = True
 while game.running:
+    print("New frame :D")
     # get keyboard inputs
     game.handleEvents()
 
@@ -19,6 +20,6 @@ while game.running:
     game.draw()
 
     # next frame
-    dt = clock.tick(1) / 1000
+    dt = clock.tick(60) / 1000
 
 pygame.quit()
