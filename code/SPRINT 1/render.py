@@ -19,7 +19,6 @@ class Render:
         position = positionIn
         centre = position + pygame.Vector2(radius, -radius)
 
-
         if (
             position.x < self.screen.get_width() and
             position.y - (2 * radius) < self.screen.get_height() and
@@ -32,8 +31,9 @@ class Render:
 
 
     def planet(self, planet):
-        # changing simulation coordinates to rendering coordinates
-        position = ((planet.position - self.camera.displacement) * self.camera.zoom)
+        # changing simulation coordinates to rendering coordinates#
+        # find displacement from centre, times that by the zoom then align it back so it renders from bottom left not centre
+        position = ((planet.position - self.camera.centre) * self.camera.zoom) + self.camera.initialCentre
         position = pygame.Vector2(position.x, -position.y) + pygame.Vector2(0, self.screen.get_height())
 
         # scaling planet's size based on zoom

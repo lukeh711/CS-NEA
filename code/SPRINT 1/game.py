@@ -35,10 +35,18 @@ class Game:
     testPlanet2 = Planet(positionIn=pygame.Vector2(300,300), radiusIn=10, massIn=5.972e24)
     testPlanet3 = Planet(positionIn=pygame.Vector2(0,0), radiusIn=10, massIn=5.972e24, colourIn="yellow")
     testPlanet4 = Planet(positionIn=pygame.Vector2(100,-100), radiusIn=10, massIn=5.972e24, colourIn="orange")
+    testPlanet5 = Planet(positionIn=pygame.Vector2(-100,-100), radiusIn=10, massIn=5.972e24, colourIn="green")
+    testPlanet6 = Planet(positionIn=pygame.Vector2(-100,100), radiusIn=10, massIn=5.972e24, colourIn="blue")
+    testPlanet7 = Planet(positionIn=pygame.Vector2(100,100), radiusIn=10, massIn=5.972e24, colourIn="purple")
+    testPlanet8 = Planet(positionIn=pygame.Vector2(-300,-500), radiusIn=10, massIn=5.972e24, colourIn="pink")
     objectList.append(testPlanet1)
     objectList.append(testPlanet2)
     objectList.append(testPlanet3)
     objectList.append(testPlanet4)
+    objectList.append(testPlanet5)
+    objectList.append(testPlanet6)
+    objectList.append(testPlanet7)
+    objectList.append(testPlanet8)
 
     # keyboard inputs
     def handleEvents(self): #--1--#
@@ -127,7 +135,7 @@ class Game:
         # simulation.tick()
 
         # TEMPish ovi
-        print(f"CAMERA: Position: {self.camera.position}, Displacement: {self.camera.displacement}, zoom: {self.camera.zoom}")
+        print(f"CAMERA: Position: {self.camera.position}, Displacement: {self.camera.displacement}, centre: {self.camera.centre}, zoom: {self.camera.zoom}")
         print(f"Test planet 1: Position: {self.testPlanet1.position}")
 
 

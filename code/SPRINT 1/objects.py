@@ -22,11 +22,10 @@ class Planet(PhysicsObject):
 
 # CAMERA
 class Camera:
-    movementSpeed = 100
+    movementSpeed = 200
     displacement = pygame.Vector2(0, 0)
-    centre = pygame.Vector2(0, 0)
     zoom = 1.0
-    zoomAmmount = 1.1
+    zoomAmmount = 1.2
 
     def __init__(self, positionIn, widthIn, heightIn):
         self.position = positionIn
@@ -34,7 +33,9 @@ class Camera:
         self.width = widthIn
         self.initialHeight = heightIn
         self.height = heightIn
-    
+        self.initialCentre = pygame.Vector2(widthIn//2, heightIn//2)
+        self.centre = pygame.Vector2(widthIn//2, heightIn//2)
+
     def move(self, positionIn):
         self.position += positionIn
         self.centre += positionIn
@@ -55,6 +56,8 @@ class Camera:
         # change size of camera and move camera to same relative place in simulation
         self.width = self.initialWidth * (1 / self.zoom)
         self.height = self.initialHeight * (1 / self.zoom)
+        # self.position += pygame.Vector2(halfWidthDifference, -halfHeightDifference)
+        # self.displacement += pygame.Vector2(halfWidthDifference, halfHeightDifference)
 
         # scaling anchor point from origin
         # self.centre *= self.zoom
@@ -62,11 +65,8 @@ class Camera:
         # self.height = self.initialHeight * (1 / self.zoom)
         # self.position = self.centre + pygame.Vector2(-self.width / 2, self.height / 2)
         # self.displacement = self.centre + pygame.Vector2(-self.width / 2, -self.height / 2)
-
         # halfWidthDifference = (self.initialWidth - self.width) / 2
         # halfHeightDifference = (self.initialHeight - self.height) / 2
-        # self.position -= pygame.Vector2(halfWidthDifference, halfHeightDifference)
-        # self.displacement -= pygame.Vector2(halfWidthDifference, -halfHeightDifference)
 
 #         print(f'''
 # ~~~
