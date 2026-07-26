@@ -11,7 +11,7 @@ game = Game()
 # main game loop
 running = True
 while game.running:
-    print("New frame :D")
+    print("New frame")
     # get keyboard inputs
     game.handleEvents()
 
