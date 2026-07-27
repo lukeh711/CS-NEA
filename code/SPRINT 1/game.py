@@ -4,6 +4,7 @@ from objects import *
 
 class Game:
     running = True
+    # TODO: split up into two dictionaries
     keyDict = {
         "space": False,
         "oldSpace": False,
@@ -27,7 +28,6 @@ class Game:
     screen = pygame.display.set_mode((1920, 1080))
     camera = Camera(pygame.Vector2(0, screen.get_height()), screen.get_width(), screen.get_height())
     render = Render(camera, screen)
-    PhysicsObject.screenHeight = screen.get_height()
 
     objectList = []
 
@@ -63,7 +63,7 @@ class Game:
             # getting keyboard inputs
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:                    # escape
-                    # TEMPish: closes when escape is pressed
+                    # TEMP: closes when escape is pressed
                     self.running = False
                 elif event.key == pygame.K_SPACE:                   # space
                     self.keyDict["space"] = True
@@ -113,8 +113,6 @@ class Game:
 
     # main code
     def update(self, dt):   #--2--#
-        dtVector2 = pygame.Vector2(dt, dt)
-
         if self.keyDict["left"]:
             self.camera.move(pygame.Vector2(-self.camera.movementSpeed, 0) * dt)
         if self.keyDict["right"]:
@@ -129,21 +127,19 @@ class Game:
             self.camera.zoomOut()
         if self.keyDict["shift"] and not self.keyDict["oldShift"]:
             self.camera.movementSpeed *= 5
-        if self.keyDict["oldShift"] and not self.keyDict["shift"]:
+        elif self.keyDict["oldShift"] and not self.keyDict["shift"]:
             self.camera.movementSpeed /= 5
 
         # simulation.tick()
 
-        # TEMPish ovi
-        print(f"CAMERA: Position: {self.camera.position}, Displacement: {self.camera.displacement}, centre: {self.camera.centre}, zoom: {self.camera.zoom}")
-        print(f"Test planet 1: Position: {self.testPlanet1.position}")
+
+        # print(f"CAMERA: Position: {self.camera.position}, Displacement: {self.camera.displacement}, centre: {self.camera.centre}, zoom: {self.camera.zoom}")
 
 
     # rendering code
     def draw(self):     #--3--#
         # clear last screen
         self.render.fill("black")
-        # self.render.circle(pygame.Vector2(-1,-1), 1, "yellow")
 
         # draw stuff here
         for currentObject in self.objectList:
