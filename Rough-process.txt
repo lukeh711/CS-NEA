@@ -43,3 +43,12 @@ rendering different areas of the screen only when needed
 
 ~~TODO~~
 - finish stuff
+
+
+~~SPRINTS~~
+1 - core system
+2 - physics simulation
+3 - visualisation
+4 - UI
+
+5 - ?

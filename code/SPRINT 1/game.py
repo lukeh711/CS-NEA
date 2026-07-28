@@ -1,4 +1,4 @@
-import pygame
+import pygame           # 1 todo & 2 temp
 from render import *
 from objects import *
 
@@ -29,6 +29,7 @@ class Game:
     camera = Camera(pygame.Vector2(0, screen.get_height()), screen.get_width(), screen.get_height())
     render = Render(camera, screen)
 
+    # temporary list of planets to render to the screen
     objectList = []
 
     testPlanet1 = Planet(positionIn=pygame.Vector2(500,500), radiusIn=10, massIn=5.972e24)
@@ -60,7 +61,7 @@ class Game:
             if event.type == pygame.QUIT:
                 self.running = False
             
-            # getting keyboard inputs
+            # key press detection
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:                    # escape
                     # TEMP: closes when escape is pressed
@@ -83,10 +84,6 @@ class Game:
                     self.keyDict["shift"] = True
                 elif event.key == pygame.K_LCTRL:                   # ctrl
                     self.keyDict["ctrl"] = True
-                # elif event.key == pygame.K_:                  # 
-                #     self.keyDict[""] = True
-                # elif event.key == pygame.K_:                  # 
-                #     self.keyDict[""] = True
             
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:                     # space
@@ -107,12 +104,11 @@ class Game:
                     self.keyDict["shift"] = False
                 elif event.key == pygame.K_LCTRL:                   # ctrl
                     self.keyDict["ctrl"] = False
-                # elif event.key == pygame.K_:                  # 
-                #     self.keyDict[""] = False
 
 
     # main code
     def update(self, dt):   #--2--#
+        # key press logic
         if self.keyDict["left"]:
             self.camera.move(pygame.Vector2(-self.camera.movementSpeed, 0) * dt)
         if self.keyDict["right"]:
@@ -130,9 +126,8 @@ class Game:
         elif self.keyDict["oldShift"] and not self.keyDict["shift"]:
             self.camera.movementSpeed /= 5
 
+        # TEMP: remove comments
         # simulation.tick()
-
-
         # print(f"CAMERA: Position: {self.camera.position}, Displacement: {self.camera.displacement}, centre: {self.camera.centre}, zoom: {self.camera.zoom}")
 
 

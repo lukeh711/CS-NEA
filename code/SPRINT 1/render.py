@@ -1,6 +1,5 @@
 import pygame
 from objects import *
-# NOTE: limited imports here to stop circular imports
 
 class Render:
     def __init__(self, cameraIn, screenIn):

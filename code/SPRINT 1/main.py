@@ -1,4 +1,4 @@
-import pygame
+import pygame           # 1 temp
 from game import *
 
 # initialise pygame screen, and camera and renderer objects
@@ -11,7 +11,9 @@ game = Game()
 # main game loop
 running = True
 while game.running:
+    # TEMP: remove prints for screenshots
     print("New frame")
+
     # get keyboard inputs
     game.handleEvents()
 

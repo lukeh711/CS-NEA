@@ -15,7 +15,7 @@ class PhysicsObject:
 class Planet(PhysicsObject):
     def __init__(self, positionIn, radiusIn, forceIn=pygame.Vector2(0, 0), velocityIn=pygame.Vector2(0, 0), accelerationIn=pygame.Vector2(0, 0), massIn=6e24, colourIn="blue"):
         super().__init__(positionIn, radiusIn, forceIn, velocityIn, accelerationIn, massIn)
-        self.colour = colourIn
+        self.colour = colourIn              # colour
 
 
 # CAMERA
@@ -41,16 +41,18 @@ class Camera:
     
     def zoomIn(self):
         self.zoom *= self.zoomAmmount
+        # reduce the effect of floating point errors by rounding to 6dp
         self.zoom = round(self.zoom, 6)
         self.zoomLogic()
     
     def zoomOut(self):
         self.zoom /= self.zoomAmmount
+        # reduce the effect of floating point errors by rounding to 6dp
         self.zoom = round(self.zoom, 8)
         self.zoomLogic()
         
 
     def zoomLogic(self):
-        # change size of camera and move camera to same relative place in simulation
+        # change size of camera object
         self.width = self.initialWidth * (1 / self.zoom)
         self.height = self.initialHeight * (1 / self.zoom)
