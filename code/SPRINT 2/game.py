@@ -1,6 +1,8 @@
-import pygame           # 1 todo & 2 temp
+import pygame
 from render import *
 from objects import *
+from simulation import *
+
 
 class Game:
     running = True
@@ -29,25 +31,16 @@ class Game:
     camera = Camera(pygame.Vector2(0, screen.get_height()), screen.get_width(), screen.get_height())
     render = Render(camera, screen)
 
-    # temporary list of planets to render to the screen
+    # list of all objects in the simulation space
     objectList = []
 
-    testPlanet1 = Planet(positionIn=pygame.Vector2(500,500), radiusIn=10, massIn=5.972e24)
-    testPlanet2 = Planet(positionIn=pygame.Vector2(300,300), radiusIn=10, massIn=5.972e24)
-    testPlanet3 = Planet(positionIn=pygame.Vector2(0,0), radiusIn=10, massIn=5.972e24, colourIn="yellow")
-    testPlanet4 = Planet(positionIn=pygame.Vector2(100,-100), radiusIn=10, massIn=5.972e24, colourIn="orange")
-    testPlanet5 = Planet(positionIn=pygame.Vector2(-100,-100), radiusIn=10, massIn=5.972e24, colourIn="green")
-    testPlanet6 = Planet(positionIn=pygame.Vector2(-100,100), radiusIn=10, massIn=5.972e24, colourIn="blue")
-    testPlanet7 = Planet(positionIn=pygame.Vector2(100,100), radiusIn=10, massIn=5.972e24, colourIn="purple")
-    testPlanet8 = Planet(positionIn=pygame.Vector2(-300,-500), radiusIn=10, massIn=5.972e24, colourIn="pink")
+    testPlanet1 = Planet(positionIn=pygame.Vector2(1000,600), radiusIn=10, massIn=5.972e24)
+    testPlanet2 = Planet(positionIn=pygame.Vector2(500,600), radiusIn=10, massIn=5.972e24)
     objectList.append(testPlanet1)
     objectList.append(testPlanet2)
-    objectList.append(testPlanet3)
-    objectList.append(testPlanet4)
-    objectList.append(testPlanet5)
-    objectList.append(testPlanet6)
-    objectList.append(testPlanet7)
-    objectList.append(testPlanet8)
+
+    simulation = Simulation(objectList)
+
 
     # keyboard inputs
     def handleEvents(self): #--1--#

@@ -2,6 +2,7 @@ import pygame
 
 # BASE PHYSICS OBJECT
 class PhysicsObject:
+    newPosition = pygame.Vector2(0,0)
     def __init__(self, positionIn, radiusIn, forceIn=pygame.Vector2(0, 0), velocityIn=pygame.Vector2(0, 0), accelerationIn=pygame.Vector2(0, 0), massIn=0):
         self.position = positionIn          # top left position vector
         self.radius = radiusIn              # radius

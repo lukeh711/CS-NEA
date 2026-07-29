@@ -1,4 +1,4 @@
-import pygame           # 1 temp
+import pygame
 from game import *
 
 # initialise pygame screen, and camera and renderer objects

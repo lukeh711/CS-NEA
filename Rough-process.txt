@@ -41,14 +41,52 @@ Unrestricted - no limits on what you can do
 rendering different areas of the screen only when needed
 
 
+
+
+
+
+
+
+
+
+~~EXTRA FEATURES~~
+- accuracy slider to change how many physics ticks per frame (inc <1?) while not changing simulation speed
+- slider to determine how far forward the trajectory arrow predicts (based on performance)
+
+
+~~EQUATIONS~~
+1. F=ma
+
+In: resultant force
+Out: acceleration
+
+
+2. Leapfrog DKD
+D 1/2: rmid​=r+v⋅(2Δt​)
+K: vnew​=v+a(rmid​)⋅Δt   {recalculate acceleration just before this line}
+D 1/2: rnew​=rmid​+vnew​⋅(2Δt​)
+|
+In: Position, momentum, acceleration
+Out: new position, new momentum
+
+
 ~~TODO~~
 - finish stuff
 
 
 ~~SPRINTS~~
-1 - core system
-2 - physics simulation
+1 - core system ✓
+2 - physics simulation <-
 3 - visualisation
 4 - UI
 
 5 - ?
+
+
+
+
+
+
+
+
+
