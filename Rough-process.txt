@@ -61,19 +61,18 @@ Performance:
 
 1. F = Gm1m2(r2-r1)/∥r2-r1∥^3
 
-In: G(const), mass of planet 2
-
+In: G(const), mass1, mass2, pos1, pos2
+Out: resultant force
 
 2. a=F/m
 
-In: resultant force
+In: resultant force, mass1
 Out: acceleration
 
 
 3. Leapfrog DKD
 -D1/2: rmid​=r+v⋅(2Δt​)
-{calc a here}
--K: vnew​=v+a(rmid​)⋅Δt
+-K: {vnew​=v+a(rmid​)⋅Δt}
 -D1/2: rnew​=rmid​+vnew​⋅(2Δt​)
 
 In: Position, velocity, acceleration

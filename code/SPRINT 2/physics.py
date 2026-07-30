@@ -5,17 +5,25 @@
 # - acceleration
 # - velocity
 # - position
+# - time
 # - misc other e.g. mass
+import pygame
 
 
 def resultantForce(forceListIn):
-    pass    # add forces
-    #return resultantForceOut
+    resultantForceOut = pygame.Vector2(0,0)
+    for force in forceListIn:
+        output += force
+    return resultantForceOut
+
 
 def acceleration(forceIn, massIn):
-    pass    # F=ma
-    #return accelerationOut
+    accelerationOut = forceIn / massIn
+    return accelerationOut
 
-def leapfrog(accelerationIn, velocityIn, positionIn):
-    pass    #leapfrog
-    #return newVelocity, newPosition
+def leapfrog(F, v, r, h, m):   # calculating acceleration, new velocity and new position
+    rMid = r + (0.5 * h * v)
+    a = acceleration(F, m)  # !!!!!!!TODO IMPORTANT!!!!! rewrite line to somehow tell it to do all of the force and everything calcs here
+    vNew = v - (a * rMid)
+    rNew = rMid + (0.5 * h * vNew)
+    return (a, vNew, rNew)

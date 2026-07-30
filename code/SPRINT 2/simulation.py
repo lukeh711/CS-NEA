@@ -5,16 +5,15 @@ import pygame
 import physics
 
 class Simulation:
-    def __init__(self, objectListIn):
-        self.objectList = objectListIn
+    objectList = []
 
-    def addObject():    #add an object to the simulation
+    def addObject(self, objectIn):    #add an object to the simulation
+        self.objectList.append(objectIn)
+
+    def removeObject(self): #remove an object from the simulation
         pass
 
-    def removeObject(): #remove an object from the simulation
-        pass
-
-    def tick(self):
+    def tick(self, dt):
         # clear each planet's forceList
         for currentObject in self.objectList:
             currentObject.forceList = []    # wipes forceList
@@ -24,10 +23,9 @@ class Simulation:
 
         # main physics updating all object attributes
         for currentObject in self.objectList:
-            self.findForces(currentObject)      # find all forces acting on the object
-            self.addForces(currentObject)       # add all the forces together
-            self.calcAcceleration(currentObject)# find acceleration from force and mass
-            self.calcPosition(currentObject)    # update planet position
+            self.findForces(currentObject)  # find all forces acting on the object
+            self.addForces(currentObject)   # add all the forces together
+            self.leapfrog(currentObject, dt)    # find acceleration and velocity, and update position
 
 
     def findForces(self, objectIn):   # find each of the forces effecting current object
@@ -36,9 +34,5 @@ class Simulation:
     def addForces(self, objectIn):
         objectIn.resultantForce = physics.resultantForce(objectIn.forceList)
 
-    def calcAcceleration(self, objectIn):
-        objectIn.acceleration = physics.acceleration(objectIn.resultantForce, objectIn.mass)
-
-    def calcPosition(self, objectIn):
-        objectIn.position, objectIn.velocity = physics.leapfrog(objectIn.acceleration, objectIn.velocity, objectIn.position)
-        # NOTE: fine to update planet position as next planet calcs will already have that planet's force calculated by pair calc previously
+    def leapfrog(self, objectIn, dt):
+        objectIn.acceleration, objectIn.velocity, objectIn.position = physics.leapfrog(objectIn.resultantForce, objectIn.velocity, objectIn.position, dt, objectIn.mass)
