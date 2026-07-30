@@ -6,26 +6,31 @@ from simulation import *
 
 class Game:
     running = True
-    # TODO: split up into two dictionaries
+
+    # dict of all keys pressed last frame
+    lastFrameKeyDict = {
+        "space": False,
+        "shift": False,
+        "ctrl": False,
+        "left": False,
+        "right": False,
+        "up": False,
+        "down": False,
+        "plus": False,
+        "minus": False,
+    }
+
+    # dict of all keys pressed this frame
     keyDict = {
         "space": False,
-        "oldSpace": False,
         "shift": False,
-        "oldShift": False,
         "ctrl": False,
-        "oldCtrl": False,
         "left": False,
-        "oldLeft": False,
         "right": False,
-        "oldRight": False,
         "up": False,
-        "oldUp": False,
         "down": False,
-        "oldDown": False,
         "plus": False,
-        "oldPlus": False,
         "minus": False,
-        "oldMinus": False
     }
     screen = pygame.display.set_mode((1920, 1080))
     camera = Camera(pygame.Vector2(0, screen.get_height()), screen.get_width(), screen.get_height())
@@ -38,7 +43,6 @@ class Game:
     testPlanet2 = Planet(positionIn=pygame.Vector2(500,600), radiusIn=10, massIn=5.972e24)
     objectList.append(testPlanet1)
     objectList.append(testPlanet2)
-
     simulation = Simulation(objectList)
 
 
@@ -46,8 +50,8 @@ class Game:
     def handleEvents(self): #--1--#
         # shifting all current values to old values
         keyList = list(self.keyDict.keys())
-        for i in range(0, len(keyList), 2):
-            self.keyDict[keyList[i+1]] = self.keyDict[keyList[i]]
+        for i, key in enumerate(self.keyDict):
+            self.lastFrameKeyDict[key] = self.keyDict[key]
 
         for event in pygame.event.get():
             # closing nicely when X button pressed
@@ -110,18 +114,18 @@ class Game:
             self.camera.move(pygame.Vector2(0, self.camera.movementSpeed) * dt)
         if self.keyDict["down"]:
             self.camera.move(pygame.Vector2(0, -self.camera.movementSpeed) * dt)
-        if self.keyDict["plus"] and not self.keyDict["oldPlus"]:
+        if self.keyDict["plus"] and not self.lastFrameKeyDict["plus"]:
             self.camera.zoomIn()
-        if self.keyDict["minus"] and not self.keyDict["oldMinus"]:
+        if self.keyDict["minus"] and not self.lastFrameKeyDict["minus"]:
             self.camera.zoomOut()
-        if self.keyDict["shift"] and not self.keyDict["oldShift"]:
+        if self.keyDict["shift"] and not self.lastFrameKeyDict["shift"]:
             self.camera.movementSpeed *= 5
-        elif self.keyDict["oldShift"] and not self.keyDict["shift"]:
+        elif self.lastFrameKeyDict["shift"] and not self.keyDict["shift"]:
             self.camera.movementSpeed /= 5
+            
 
-        # TEMP: remove comments
-        # simulation.tick()
-        # print(f"CAMERA: Position: {self.camera.position}, Displacement: {self.camera.displacement}, centre: {self.camera.centre}, zoom: {self.camera.zoom}")
+        self.simulation.tick()
+        print(f"CAMERA: Position: {self.camera.position}, Displacement: {self.camera.displacement}, centre: {self.camera.centre}, zoom: {self.camera.zoom}")
 
 
     # rendering code
