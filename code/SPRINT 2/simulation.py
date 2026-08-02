@@ -32,28 +32,29 @@ class Simulation:
 
     # changing all physics-related variables for the object
     def leapfrog(self, objectIn, dt):
-        a = objectIn.acceleration; v = objectIn.velocity; r = objectIn.position; h = dt # assign easier to understand var names
-
+        v = objectIn.velocity; r = objectIn.position; h = dt # assign easier to understand var names
         rMid = r + (0.5 * h * v)        # Drift
-        a = self.updateAcceleration(objectIn, rMid)   # Update a
-        vNew = v + (a * h)           # Kick
+        a = self.updateAcceleration(objectIn, rMid)   # calculate acceleration + forces on the planet
+        vNew = v + (a * h)              # Kick
         rNew = rMid + (0.5 * h * vNew)  # Drift
         objectIn.velocity = vNew; objectIn.position = rNew
 
     def updateAcceleration(self, objectIn, positionIn):
-        objectIn.position = positionIn  # set position to rMjd
+        objectIn.position = positionIn  # set position to rMid
         self.updateForces(objectIn)    # update the force dictionary
         self.calcResultantForce(objectIn)   # add all the forces in the force dictionary
         objectIn.acceleration = physics.calcAcceleration(objectIn.resultantForce, objectIn.mass)  # calculate acceleration
         return objectIn.acceleration
 
-    def updateForces(self, objectIn):   # find each of the forces effecting current object
+    def updateForces(self, objectIn):   # find each of the forces effecting THIS object
         for currentObject in self.objectList: # loops through all planets in simulation
             if not currentObject is objectIn:   # makes sure it's not itself
-                targetID = currentObject.objectID   # finds the objectID of the object it's currently looking at 
-                if objectIn.forceDict[targetID] == pygame.Vector2(0, 0):    # makes sure it hasn't already been calculated
-                    pullForce = self.calcPull(objectIn, currentObject)      # EXPENSIVE: calculates the vector force pull between each of them
-                    objectIn.forceDict[targetID] = pullForce    # assigns that planetID to have that force applied to it
+                currentID = objectIn.objectID   # finds the objectID of THIS object
+                targetID = currentObject.objectID   # finds the objectID of THAT object
+                if not targetID in objectIn.forceDict.keys():    # makes sure it hasn't already been calculated
+                    pullForce = self.calcPull(objectIn, currentObject)      # EXPENSIVE: calculates the vector force pull between THIS and THAT
+                    objectIn.forceDict[targetID] = pullForce    # assigns THIS object's planetID to be the calculated vector force in its forceDict
+                    currentObject.forceDict[currentID] = -pullForce # assigns THAT object's planetID to be the negative of the calculated vector force in its forceDict
                 # else the force pair was already calculated by a previous object
                 
     def calcPull(self, object1, object2):

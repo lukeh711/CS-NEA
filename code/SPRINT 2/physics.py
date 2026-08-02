@@ -22,7 +22,11 @@ def calcAcceleration(forceIn, massIn):
     return accelerationOut
 
 def calcForce(r1, r2, m1, m2):
-    F = G * m1 * m2 * (r2 - r1) / ()    # !!TODO: COMPLETE THIS LOGIC
+    deltar = (r2 - r1)
+    deltarMagnitude = deltar.length()   # £££ pythagoras
+    F = G * m1 * m2 * deltar / (deltarMagnitude)**3
+    F = F / 1e9 # TEMP to remove the issue with unit scaling
+    return F
 
 def drift(v, r, h):
     pass
