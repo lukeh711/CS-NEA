@@ -6,7 +6,7 @@ pygame.init()
 clock = pygame.time.Clock()
 dt = 0
 game = Game()
-
+game.start()
 
 # main game loop
 running = True

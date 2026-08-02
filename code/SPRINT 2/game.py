@@ -32,18 +32,20 @@ class Game:
         "plus": False,
         "minus": False,
     }
-    screen = pygame.display.set_mode((1920, 1080))
+    screen = pygame.display.set_mode((1280, 720))
     camera = Camera(pygame.Vector2(0, screen.get_height()), screen.get_width(), screen.get_height())
     render = Render(camera, screen)
     simulation = Simulation()
     # list of all objects in the simulation space
 
-    testPlanet1 = Planet(positionIn=pygame.Vector2(1000,600), radiusIn=10, massIn=5.972e24)
-    testPlanet2 = Planet(positionIn=pygame.Vector2(500,600), radiusIn=10, massIn=5.972e24)
-    simulation.objectList.append(testPlanet1)
-    simulation.objectList.append(testPlanet2)
-    
 
+    def start(self):    #--0--#
+        # add some initial objects into simulation.py
+        testPlanet1 = Planet(objectIDIn = 0, positionIn=pygame.Vector2(1000,600), radiusIn=10, massIn=5.972e24) # velocityIn=pygame.Vector2(0, -10)
+        testPlanet2 = Planet(objectIDIn = 1, positionIn=pygame.Vector2(500,600), radiusIn=10, massIn=5.972e24)  # velocityIn=pygame.Vector2(0, 10)
+        self.simulation.objectList.append(testPlanet1)
+        self.simulation.objectList.append(testPlanet2)
+    
 
     # keyboard inputs
     def handleEvents(self): #--1--#

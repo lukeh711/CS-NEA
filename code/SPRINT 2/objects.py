@@ -3,11 +3,12 @@ import pygame
 # BASE PHYSICS OBJECT
 class PhysicsObject:
     # newPosition = pygame.Vector2(0,0)
-    forceList = []
+    forceDict = {}
     resultantForce = pygame.Vector2(0,0)
     acceleration = pygame.Vector2(0, 0)
 
-    def __init__(self, positionIn, radiusIn, velocityIn=pygame.Vector2(0, 0), massIn=0):
+    def __init__(self, objectIDIn, positionIn, radiusIn, velocityIn=pygame.Vector2(0, 0), massIn=0):
+        self.objectID = objectIDIn          # ID for working with different objects
         self.position = positionIn          # top left position vector
         self.radius = radiusIn              # radius
         self.mass = massIn                  # mass
@@ -16,8 +17,8 @@ class PhysicsObject:
 
 # PLANET
 class Planet(PhysicsObject):
-    def __init__(self, positionIn, radiusIn, velocityIn=pygame.Vector2(0, 0), massIn=6e24, colourIn="blue"):
-        super().__init__(positionIn, radiusIn, velocityIn, massIn)
+    def __init__(self, objectIDIn, positionIn, radiusIn, velocityIn=pygame.Vector2(0, 0), massIn=6e24, colourIn="blue"):
+        super().__init__(objectIDIn, positionIn, radiusIn, velocityIn, massIn)
         self.colour = colourIn              # colour
 
 
