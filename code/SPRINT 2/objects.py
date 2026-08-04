@@ -1,5 +1,14 @@
 import pygame
 
+class vector:
+    x = 0
+    y = 0
+    def __init__(self, xIn, yIn):
+        self.x = xIn
+        self.y = yIn
+
+    # other methods here
+
 # BASE PHYSICS OBJECT
 class PhysicsObject:
     # newPosition = pygame.Vector2(0,0)

@@ -15,8 +15,10 @@ class Simulation:
     def addObject(self, objectIn):    #add an object to the simulation
         self.objectList.append(objectIn)
 
-    def removeObject(self): #remove an object from the simulation
-        pass
+    def removeObject(self, objectIn): #remove an object from the simulation
+        for currentObject in self.objectList:
+            if currentObject is objectIn:
+                self.objectList.remove(objectIn)
 
     def tick(self, dt):
         # clear each planet's forceDict
