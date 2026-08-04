@@ -5,6 +5,12 @@
 # naming:
 # updateX - various pieces of code to update that var (using sub methods for maths)
 # calcX - take in object and send & recieve data to & from physics.py to calculate a value
+# 
+# USING UNITS OF:
+# Distance - AU (astronomical units)
+# Mass - Mo (solar mass)
+# Time - d (days)
+# MEANING G = 1.0
 
 import pygame
 import physics
@@ -24,12 +30,12 @@ class Simulation:
         # clear each planet's forceDict
         for currentObject in self.objectList:
             currentObject.forceDict = {}
-            print(f"currentObject ID {currentObject.objectID} at {currentObject.position} has this forceDict: {currentObject.forceDict}")
+            # print(f"currentObject ID {currentObject.objectID} at {currentObject.position} has this forceDict: {currentObject.forceDict}")   # TEMP
 
         # main physics updating all object attributes
         for currentObject in self.objectList:
             self.leapfrog(currentObject, dt)    # update all attributes of the current planet using the leapfrog method
-            print(f"currentObject ID {currentObject.objectID} at {currentObject.position} NOW has this forceDict: {currentObject.forceDict}")
+            # print(f"currentObject ID {currentObject.objectID} at {currentObject.position} NOW has this forceDict: {currentObject.forceDict}")   # TEMP
 
 
     # changing all physics-related variables for the object

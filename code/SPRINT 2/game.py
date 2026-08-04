@@ -42,9 +42,9 @@ class Game:
 
     def start(self):    #--0--#
         # add some initial objects into simulation.py
-        testPlanet1 = Planet(objectIDIn = 0, velocityIn=pygame.Vector2(0, 90), positionIn=pygame.Vector2(1000,600), radiusIn=10, massIn=5.972e24)
-        testPlanet2 = Planet(objectIDIn = 1, velocityIn=pygame.Vector2(0, -50), positionIn=pygame.Vector2(500,600), radiusIn=10, massIn=5.972e24, colourIn="red")
-        testPlanet3 = Planet(objectIDIn = 2, velocityIn=pygame.Vector2(0, 0), positionIn=pygame.Vector2(800,600), radiusIn=15, massIn=5.972e25, colourIn="orange")
+        testPlanet1 = Planet(objectIDIn = 0, velocityIn=pygame.Vector2(0, 0), positionIn=pygame.Vector2(1,1), radiusIn=10, massIn=5.972e24)
+        testPlanet2 = Planet(objectIDIn = 1, velocityIn=pygame.Vector2(0, 0), positionIn=pygame.Vector2(3,1), radiusIn=10, massIn=5.972e24, colourIn="red")
+        testPlanet3 = Planet(objectIDIn = 2, velocityIn=pygame.Vector2(0, 0), positionIn=pygame.Vector2(2,2), radiusIn=15, massIn=5.972e25, colourIn="orange")
         self.simulation.addObject(testPlanet1)
         self.simulation.addObject(testPlanet2)
         self.simulation.addObject(testPlanet3)

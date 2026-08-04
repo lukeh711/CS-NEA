@@ -59,7 +59,7 @@ Performance:
 ~~EQUATIONS~~
 (assuming a, r, V and F are vector2s)
 
-1. F = Gm1m2(r2-r1)/∥r2-r1∥^3
+1. F = [G]m1m2(r2-r1)/∥r2-r1∥^3
 
 In: G(const), mass1, mass2, pos1, pos2
 Out: resultant force
@@ -77,6 +77,16 @@ Out: acceleration
 
 In: Position, velocity, acceleration
 Out: new position, new velocity
+
+
+
+~~Scale~~
+Distance in AU
+Mass in Solar Mass
+Time in Days
+
+All else follows relative to that
+
 
 
 ~~TODO~~
