@@ -13,15 +13,16 @@ class Render:
     def circle(self, positionIn, radius, colour):
         # makes sure the planet can't dissapear entirely from being too small
         radius = max(1, radius)
-        position = positionIn
-        centre = position + pygame.Vector2(radius, -radius)
+        centre = (positionIn.getX(), positionIn.getY())
+
+        # print(f"{colour} object at {positionIn.getX()}, {positionIn.getY()} of radius {radius} sent to render")
 
         # only renders it if it is currently within the bounds of the screen
         if (
-            position.x < self.screen.get_width() and
-            position.y - (2 * radius) < self.screen.get_height() and
-            position.x + (2 * radius) > 0 and
-            position.y > 0
+            centre[0] - radius < self.screen.get_width() and
+            centre[1] - radius < self.screen.get_height() and
+            centre[0] + radius > 0 and
+            centre[1] + radius > 0
         ):
             pygame.draw.circle(self.screen, colour, centre, radius)
 
@@ -30,8 +31,8 @@ class Render:
     def planet(self, planet):
         # changing simulation coordinates to rendering coordinates
         # find displacement from centre, times that by the zoom then align it back so it renders from bottom left not centre
-        position = ((planet.position - self.camera.centre) * self.camera.zoom) + self.camera.initialCentre
-        position = pygame.Vector2(position.x, -position.y) + pygame.Vector2(0, self.screen.get_height())
+        position = ((planet.position - self.camera.centre) * self.camera.zoom) + self.camera.screenCentreOffset
+        position = Vector(position.getX(), -position.getY()) + Vector(0, self.screen.get_height())
 
         # scaling planet's size based on zoom
         radius = planet.radius * self.camera.zoom

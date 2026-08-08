@@ -9,9 +9,10 @@
 # - misc other e.g. mass
 import pygame
 from constants import *
+from vector import *
 
 def addForce(forceDictIn):
-    resultantForceOut = pygame.Vector2(0,0)
+    resultantForceOut = Vector(0,0)
     for item in forceDictIn:
         resultantForceOut += forceDictIn[item]
     return resultantForceOut
@@ -25,7 +26,6 @@ def calcForce(r1, r2, m1, m2):
     deltar = (r2 - r1)
     deltarMagnitude = deltar.length()   # £££ pythagoras
     F = m1 * m2 * deltar / (deltarMagnitude)**3
-    F = F
     return F
 
 def drift(v, r, h):

@@ -1,3 +1,3 @@
-G = 6.6743e-11
+G = 6.6743e-11  # theoretically useless bnow but keeping for testing sake
 AU = 1.495978707e11
 Mo = 1.9885e30

@@ -1,4 +1,5 @@
 import pygame
+from vector import *
 from render import *
 from objects import *
 from simulation import *
@@ -6,6 +7,8 @@ from simulation import *
 
 class Game:
     running = True
+    simulationSpeed = 1.0
+    operations = 0
 
     # dict of all keys pressed last frame
     lastFrameKeyDict = {
@@ -18,6 +21,8 @@ class Game:
         "down": False,
         "plus": False,
         "minus": False,
+        "fullStop": False,
+        "comma": False,
     }
 
     # dict of all keys pressed this frame
@@ -31,22 +36,22 @@ class Game:
         "down": False,
         "plus": False,
         "minus": False,
+        "fullStop": False,
+        "comma": False,
     }
-    # (1280, 720)
-    screen = pygame.display.set_mode((1920, 1080))
-    camera = Camera(pygame.Vector2(0, screen.get_height()), screen.get_width(), screen.get_height())
-    render = Render(camera, screen)
-    simulation = Simulation()
-    # list of all objects in the simulation space
-
 
     def start(self):    #--0--#
+        self.screen = pygame.display.set_mode((1280, 720))                          # (1280, 720)
+        self.camera = Camera(self.screen.get_width(), self.screen.get_height())     # (1920, 1080)
+        self.render = Render(self.camera, self.screen)                              # (2560, 1440)
+        self.simulation = Simulation()                                              # (3840, 2160)
+
         # add some initial objects into simulation.py
-        testPlanet1 = Planet(objectIDIn = 0, velocityIn=pygame.Vector2(0, 0), positionIn=pygame.Vector2(1,1), radiusIn=10, massIn=5.972e24)
-        testPlanet2 = Planet(objectIDIn = 1, velocityIn=pygame.Vector2(0, 0), positionIn=pygame.Vector2(3,1), radiusIn=10, massIn=5.972e24, colourIn="red")
-        testPlanet3 = Planet(objectIDIn = 2, velocityIn=pygame.Vector2(0, 0), positionIn=pygame.Vector2(2,2), radiusIn=15, massIn=5.972e25, colourIn="orange")
+        testPlanet1 = Planet(objectIDIn = 0, velocityIn=Vector(0, 1), positionIn=Vector(-1,0), radiusIn=0.1, massIn=3.003e-6)
+        # testPlanet2 = Planet(objectIDIn = 1, velocityIn=Vector(0, -1), positionIn=Vector(1,0), radiusIn=0.1, massIn=3.003e-6, colourIn="red")
+        testPlanet3 = Planet(objectIDIn = 2, velocityIn=Vector(0, 0), positionIn=Vector(0,0), radiusIn=0.3, massIn=1.0, colourIn="orange")
         self.simulation.addObject(testPlanet1)
-        self.simulation.addObject(testPlanet2)
+        # self.simulation.addObject(testPlanet2)
         self.simulation.addObject(testPlanet3)
     
 
@@ -85,6 +90,10 @@ class Game:
                     self.keyDict["shift"] = True
                 elif event.key == pygame.K_LCTRL:                   # ctrl
                     self.keyDict["ctrl"] = True
+                elif event.key == pygame.K_PERIOD:                  # .
+                    self.keyDict["fullStop"] = True
+                elif event.key == pygame.K_COMMA:                   # ,
+                    self.keyDict["comma"] = True
             
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:                     # space
@@ -97,39 +106,60 @@ class Game:
                     self.keyDict["up"] = False
                 elif event.key == pygame.K_DOWN:                    # down arrow
                     self.keyDict["down"] = False
-                elif event.key == pygame.K_EQUALS:                  # +
+                elif event.key == pygame.K_EQUALS:                  # + and =
                     self.keyDict["plus"] = False
-                elif event.key == pygame.K_MINUS:                   # -
+                elif event.key == pygame.K_MINUS:                   # - and _
                     self.keyDict["minus"] = False
                 elif event.key == pygame.K_LSHIFT:                  # shift
                     self.keyDict["shift"] = False
                 elif event.key == pygame.K_LCTRL:                   # ctrl
                     self.keyDict["ctrl"] = False
+                elif event.key == pygame.K_PERIOD:                  # > and .
+                    self.keyDict["fullStop"] = False
+                elif event.key == pygame.K_COMMA:                   # < and ,
+                    self.keyDict["comma"] = False
 
 
     # main code
     def update(self, dt):   #--2--#
         # key press logic
         if self.keyDict["left"]:
-            self.camera.move(pygame.Vector2(-self.camera.movementSpeed, 0) * dt)
+            self.camera.move(Vector(-self.camera.movementSpeed, 0) * dt)
         if self.keyDict["right"]:
-            self.camera.move(pygame.Vector2(self.camera.movementSpeed, 0) * dt)
+            self.camera.move(Vector(self.camera.movementSpeed, 0) * dt)
         if self.keyDict["up"]:
-            self.camera.move(pygame.Vector2(0, self.camera.movementSpeed) * dt)
+            self.camera.move(Vector(0, self.camera.movementSpeed) * dt)
         if self.keyDict["down"]:
-            self.camera.move(pygame.Vector2(0, -self.camera.movementSpeed) * dt)
+            self.camera.move(Vector(0, -self.camera.movementSpeed) * dt)
+
         if self.keyDict["plus"] and not self.lastFrameKeyDict["plus"]:
             self.camera.zoomIn()
         if self.keyDict["minus"] and not self.lastFrameKeyDict["minus"]:
             self.camera.zoomOut()
+
         if self.keyDict["shift"] and not self.lastFrameKeyDict["shift"]:
             self.camera.movementSpeed *= 5
         elif self.lastFrameKeyDict["shift"] and not self.keyDict["shift"]:
             self.camera.movementSpeed /= 5
-            
 
-        self.simulation.tick(dt)
-        print(f"CAMERA: Position: {self.camera.position}, Displacement: {self.camera.displacement}, centre: {self.camera.centre}, zoom: {self.camera.zoom}")
+        if self.keyDict["ctrl"] and not self.lastFrameKeyDict["ctrl"]:
+            self.camera.movementSpeed /= 5
+        elif self.lastFrameKeyDict["ctrl"] and not self.keyDict["ctrl"]:
+            self.camera.movementSpeed *= 5
+
+        if self.keyDict["fullStop"] and not self.lastFrameKeyDict["fullStop"]:
+            self.simulationSpeed *= 1.1
+        elif self.keyDict["comma"] and not self.lastFrameKeyDict["comma"]:
+            self.simulationSpeed /= 1.1
+        
+        
+        # simulation logic
+        self.operations += self.simulationSpeed
+        while self.operations >= 1:     # adds the fractional speed to the accumulator (operations) each frame, and over time will perform correct number of operations each frame
+            self.simulation.tick(dt)
+            self.operations -= 1
+        # print(f"CAMERA: Displacement: {self.camera.displacement}, centre: {self.camera.centre}, zoom: {self.camera.zoom}, width: {self.camera.width}, height: {self.camera.height}")
+        print(f"Simulation speed: {self.simulationSpeed}")
 
 
     # rendering code

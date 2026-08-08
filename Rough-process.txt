@@ -53,7 +53,7 @@ rendering different areas of the screen only when needed
 Performance:
 - accuracy slider to change how many physics ticks per frame (inc <1?) while not changing simulation speed
 - slider to determine how far forward the trajectory arrow predicts (based on performance)
-- calculating F, a and pos: once calcing force between each pair, store it for both objs, not just one and recalcing for second (also eliminates newPos)[L impact], using heuristics to estimate a impact per planet and have (adjustable?) cutoff [S impact] or even have a (togglable/auto toggled based on distance to nearest planet / no objects?) distance cutoff
+- calculating F, a and pos: using heuristics to estimate a impact per planet and have (adjustable?) cutoff? or even have a (togglable/auto toggled based on distance to nearest planet / no objects?) distance cutoff?
 
 
 ~~EQUATIONS~~

@@ -13,6 +13,8 @@ running = True
 while game.running:
     # TEMP: remove prints for screenshots
     print("New frame")
+    # if dt != 0:
+    #     print("start debugging here")
 
     # get keyboard inputs
     game.handleEvents()

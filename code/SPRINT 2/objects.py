@@ -1,24 +1,15 @@
 import pygame
-
-class vector:
-    x = 0
-    y = 0
-    def __init__(self, xIn, yIn):
-        self.x = xIn
-        self.y = yIn
-
-    # other methods here
+from vector import *
 
 # BASE PHYSICS OBJECT
 class PhysicsObject:
-    # newPosition = pygame.Vector2(0,0)
     forceDict = {}
-    resultantForce = pygame.Vector2(0,0)
-    acceleration = pygame.Vector2(0, 0)
+    resultantForce = Vector(0,0)
+    acceleration = Vector(0, 0)
 
-    def __init__(self, objectIDIn, positionIn, radiusIn, velocityIn=pygame.Vector2(0, 0), massIn=0):
+    def __init__(self, objectIDIn, positionIn, radiusIn, velocityIn=Vector(0, 0), massIn=0):
         self.objectID = objectIDIn          # ID for working with different objects
-        self.position = positionIn          # top left position vector
+        self.position = positionIn          # position
         self.radius = radiusIn              # radius
         self.mass = massIn                  # mass
         self.velocity = velocityIn          # (optional) velocity vector
@@ -26,46 +17,49 @@ class PhysicsObject:
 
 # PLANET
 class Planet(PhysicsObject):
-    def __init__(self, objectIDIn, positionIn, radiusIn, velocityIn=pygame.Vector2(0, 0), massIn=6e24, colourIn="blue"):
+    def __init__(self, objectIDIn, positionIn, radiusIn, velocityIn=Vector(0, 0), massIn=6e24, colourIn="blue"):
         super().__init__(objectIDIn, positionIn, radiusIn, velocityIn, massIn)
         self.colour = colourIn              # colour
 
 
 # CAMERA
 class Camera:
-    movementSpeed = 200
-    displacement = pygame.Vector2(0, 0)
     zoom = 1.0
-    zoomAmmount = 1.2
+    inverseZoom = 1.0
+    zoomAmmount = 1.2   # the * step each zoom in or out takes
+    movementSpeed = 200 # the speed of the camera (in arbritrary units) (~200)
+    startingWidth = 10  # the target initial starting size of the camera
+    startingCentre = Vector(0,0)    # the target initial position for the centre of the camera
+    displacement = Vector(0, 0)
 
-    def __init__(self, positionIn, widthIn, heightIn):
-        self.position = positionIn
-        self.initialWidth = widthIn
-        self.width = widthIn
-        self.initialHeight = heightIn
-        self.height = heightIn
-        self.initialCentre = pygame.Vector2(widthIn//2, heightIn//2)
-        self.centre = pygame.Vector2(widthIn//2, heightIn//2)
+    def __init__(self, widthIn, heightIn):
+        # stores the width and height of the screen
+        self.screenWidth = widthIn
+        self.screenHeight = heightIn
+        # works out the vector from the bottom left corner to the centre of the screen (used for rendering)
+        self.screenCentreOffset = Vector(self.screenWidth//2, self.screenHeight//2)
+
+        self.zoom = widthIn / self.startingWidth # zoom in enough to make the width of the camera match with the startingCentre variable
+        self.zoomLogic()
+
+        self.centre = self.startingCentre   # define the new centre based on the startingCentre variable
 
     def move(self, positionIn):
-        self.position += positionIn
-        self.centre += positionIn
-        self.displacement += positionIn
+        self.centre += positionIn * self.inverseZoom
+        self.displacement += positionIn * self.inverseZoom
     
     def zoomIn(self):
-        self.zoom *= self.zoomAmmount
-        # reduce the effect of floating point errors by rounding to 6dp
-        self.zoom = round(self.zoom, 6)
+        self.zoom *= self.zoomAmmount   # no rounding to reduce errors with large zooms in / out, irrespective of small insignificant floating point errors
         self.zoomLogic()
     
     def zoomOut(self):
-        self.zoom /= self.zoomAmmount
-        # reduce the effect of floating point errors by rounding to 6dp
-        self.zoom = round(self.zoom, 8)
+        self.zoom /= self.zoomAmmount   # no rounding to reduce errors with large zooms in / out, irrespective of small insignificant floating point errors
         self.zoomLogic()
-        
 
     def zoomLogic(self):
+        # calculate inverse zoom ()
+        self.inverseZoom = 1 / self.zoom
+
         # change size of camera object
-        self.width = self.initialWidth * (1 / self.zoom)
-        self.height = self.initialHeight * (1 / self.zoom)
+        self.width = self.screenWidth * self.inverseZoom
+        self.height = self.screenHeight * self.inverseZoom
