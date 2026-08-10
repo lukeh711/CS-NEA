@@ -1,4 +1,3 @@
-import pygame
 from vector import *
 
 # BASE PHYSICS OBJECT

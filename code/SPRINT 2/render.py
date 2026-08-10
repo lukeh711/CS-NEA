@@ -15,8 +15,6 @@ class Render:
         radius = max(1, radius)
         centre = (positionIn.getX(), positionIn.getY())
 
-        # print(f"{colour} object at {positionIn.getX()}, {positionIn.getY()} of radius {radius} sent to render")
-
         # only renders it if it is currently within the bounds of the screen
         if (
             centre[0] - radius < self.screen.get_width() and

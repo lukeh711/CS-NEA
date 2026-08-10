@@ -7,8 +7,6 @@
 # - position
 # - time
 # - misc other e.g. mass
-import pygame
-from constants import *
 from vector import *
 
 def addForce(forceDictIn):
@@ -29,7 +27,9 @@ def calcForce(r1, r2, m1, m2):
     return F
 
 def drift(v, r, h):
-    pass
+    rNew = r + (0.5 * h * v)
+    return rNew
 
-def kick(a, v, r):
-    pass
+def kick(a, v, h):
+    vNew = v + (a * h)
+    return vNew
