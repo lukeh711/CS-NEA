@@ -8,7 +8,7 @@ class Vector:
     def __add__(self, other):
         if isinstance(other, Vector):
             result = self.xy + other.xy
-            return Vector(*result)  # *result unpacks the result (which is a ) into 2 float64s, which then are input into the constructor method to create the new Vector object
+            return Vector(*result)  # *result unpacks the result (which is a numpy array) into 2 float64s, which then are input into the constructor method to create the new Vector object
         return NotImplemented
 
     def __radd__(self, other):

@@ -1,16 +1,4 @@
-# update all the physics when simulation.tick() called
-# mainly object management and controlling what physics functions are called
 # NOTE: no actual maths happens here - that's what physics.py is for!
-# TODO: add kick and drift methods to physics.py
-# naming:
-# updateX - various pieces of code to update that var (using sub methods for maths)
-# calcX - take in object and send & recieve data to & from physics.py to calculate a value
-# 
-# USING UNITS OF:
-# Distance - AU (astronomical units)
-# Mass - Mo (solar mass)
-# Time - d (days)
-# MEANING G = 1.0
 import physics
 
 class Simulation:
@@ -24,6 +12,8 @@ class Simulation:
             if currentObject is objectIn:
                 self.objectList.remove(objectIn)
 
+
+    # update all physics here
     def tick(self, dt):
         # clear each planet's forceDict
         for currentObject in self.objectList:
@@ -38,11 +28,12 @@ class Simulation:
     def leapfrog(self, objectIn, dt):
         v = objectIn.velocity; r = objectIn.position; h = dt    # assign easier to understand var names
         rMid = physics.drift(v, r, h)
-        a = self.updateAcceleration(objectIn, rMid) # calculate acceleration + forces on the planet (also assigns self.acceleration to the new value)
-        vNew = physics.kick(a, v, h)     
+        a = self.updateAcceleration(objectIn, rMid) # calculate acceleration & forces on the planet (also assigns self.acceleration to the new value)
+        vNew = physics.kick(a, v, h)
         rNew = physics.drift(vNew, rMid, h)
         objectIn.velocity = vNew; objectIn.position = rNew
 
+    
     def updateAcceleration(self, objectIn, positionIn):
         objectIn.position = positionIn  # set position to rMid
         self.updateForces(objectIn)     # update the force dictionary

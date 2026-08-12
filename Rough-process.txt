@@ -81,8 +81,8 @@ Out: new position, new velocity
 
 
 ~~Scale~~
-Distance in AU
-Mass in Solar Mass
+Distance in AU (1.495978707x10^11m)
+Mass in Solar Mass (1.9885x10^30kg)
 Time in Days
 
 All else follows relative to that
@@ -95,9 +95,9 @@ All else follows relative to that
 
 ~~SPRINTS~~
 1 - core system ✓
-2 - physics simulation <-
-3 - visualisation
-4 - UI
+2 - physics simulation ✓
+3 - UI (+ lil bit of optimisation?)
+4 - visualisation 
 
 5 - ?
 
