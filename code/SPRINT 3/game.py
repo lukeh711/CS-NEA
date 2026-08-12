@@ -1,8 +1,10 @@
 import pygame   # 2 temps
+import pygame_gui
 from vector import *
 from render import *
 from objects import *
 from simulation import *
+from UI import *
 
 
 class Game:
@@ -44,12 +46,18 @@ class Game:
         "r": False
     }
 
+    # (1280, 720)
+    # (1920, 1080)
+    # (2560, 1440)
+    # (3840, 2160)
+
     #---code run at startup---
     def start(self):    #--0--#
-        self.screen = pygame.display.set_mode((1280, 720))                          # (1280, 720)
-        self.camera = Camera(self.screen.get_width(), self.screen.get_height())     # (1920, 1080)
-        self.render = Render(self.camera, self.screen)                              # (2560, 1440)
-        self.simulation = Simulation()                                              # (3840, 2160)
+        self.screen = pygame.display.set_mode((1280, 720))
+        self.camera = Camera(self.screen.get_width(), self.screen.get_height())
+        self.render = Render(self.camera, self.screen)
+        self.simulation = Simulation()
+        self.UI = UI(self.screen)
 
         # add some initial objects into simulation.py
         testPlanet1 = Planet(objectIDIn = 0, velocityIn=Vector(0, 1), positionIn=Vector(-1,0), radiusIn=0.1, massIn=3.003e-6)
@@ -128,6 +136,8 @@ class Game:
                 elif event.key == pygame.K_r:                       # r
                     self.keyDict["r"] = False
 
+            self.UI.handleEvents(event)
+
 
     #---main code---
     def update(self, dt):   #--2--#
@@ -187,15 +197,20 @@ class Game:
         # print(f"CAMERA: Displacement: {self.camera.displacement}, centre: {self.camera.centre}, zoom: {self.camera.zoom}, width: {self.camera.width}, height: {self.camera.height}")
         # print(f"Simulation speed: {self.simulationSpeed}")
 
+        self.UI.update(dt)
+
 
     #---rendering code---
     def draw(self):     #--3--#
         # clear last screen
         self.render.fill("black")
 
-        # draw stuff here
+        # draw simulation objects
         for currentObject in self.simulation.objectList:
             self.render.renderObject(currentObject)
+
+        # draw the UI
+        self.UI.drawUI()
 
         # send the new frame to the screen
         pygame.display.flip()
