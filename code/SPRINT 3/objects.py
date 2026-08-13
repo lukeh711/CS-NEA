@@ -5,6 +5,7 @@ class PhysicsObject:
     forceDict = {}
     resultantForce = Vector(0,0)
     acceleration = Vector(0, 0)
+    selected = False
 
     def __init__(self, objectIDIn, positionIn, radiusIn, velocityIn=Vector(0, 0), massIn=0):
         self.objectID = objectIDIn          # ID for working with different objects

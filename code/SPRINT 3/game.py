@@ -53,11 +53,15 @@ class Game:
 
     #---code run at startup---
     def start(self):    #--0--#
-        self.screen = pygame.display.set_mode((1280, 720))
+        # initialise system objects
+        self.screen = pygame.display.set_mode((1920, 1080))
         self.camera = Camera(self.screen.get_width(), self.screen.get_height())
         self.render = Render(self.camera, self.screen)
         self.simulation = Simulation()
         self.UI = UI(self.screen)
+
+        # create the UI elements
+        self.UI.createUI()
 
         # add some initial objects into simulation.py
         testPlanet1 = Planet(objectIDIn = 0, velocityIn=Vector(0, 1), positionIn=Vector(-1,0), radiusIn=0.1, massIn=3.003e-6)

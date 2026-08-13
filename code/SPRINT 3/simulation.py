@@ -2,6 +2,7 @@
 import physics
 
 class Simulation:
+    # list of all objects in the simulation space
     objectList = []
 
     def addObject(self, objectIn):    #add an object to the simulation
