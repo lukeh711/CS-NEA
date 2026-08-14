@@ -2,8 +2,12 @@
 import physics
 
 class Simulation:
-    # list of all objects in the simulation space
-    objectList = []
+    objectList = [] # list of all physics objects being simulated
+    speed = 1.0     # the overall speed of the simulation
+    speedIncriment = 1.5    # the ammount the simulations speed is multiplied and divided by each button press
+    operations = 0  # the rolling number of .tick operations to do each frame
+    rewind = False  # true if the simulation is playing backwards
+    paused = False
 
     def addObject(self, objectIn):    #add an object to the simulation
         self.objectList.append(objectIn)
@@ -14,12 +18,20 @@ class Simulation:
                 self.objectList.remove(objectIn)
 
 
+    # called each frame, has logic for pausing & simulation speed
+    def frame(self, dt):
+        if not self.paused: # if paused, doesn't run physics
+            self.operations += self.speed
+            while self.operations >= 1:   # if simulation speed = 2, it will run all of the physics twice per tick
+                self.tick(dt)
+                self.operations -= 1
+
+
     # update all physics here
     def tick(self, dt):
         # clear each planet's forceDict
         for currentObject in self.objectList:
             currentObject.forceDict = {}
-
         # main physics updating all object attributes
         for currentObject in self.objectList:
             self.leapfrog(currentObject, dt)    # update all attributes of the current planet using the leapfrog method
@@ -61,6 +73,8 @@ class Simulation:
         objectIn.resultantForce = physics.addForce(objectIn.forceDict)
 
 
-    def flipVelocities(self):
+    def reverse(self):  # for rewinding the simulation
         for currentObject in self.objectList:
             currentObject.velocity *= -1
+        # toggles the rewind bool attribute
+        self.rewind = not self.rewind

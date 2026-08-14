@@ -9,10 +9,6 @@ from UI import *
 
 class Game:
     running = True
-    simulationSpeed = 1.0   # the overall speed of the simulation (inc. negative numbers for rewinding)
-    simulationSpeedAmmount = 1.5    # the ammount the simulations speed is multiplied and divided by each button press
-    simulationOperations = 0
-    simulationPaused = False
 
     # dict of all keys pressed last frame
     lastFrameKeyDict = {
@@ -175,28 +171,21 @@ class Game:
 
         # speeding up or slowing down simulation speed
         if self.keyDict["fullStop"] and not self.lastFrameKeyDict["fullStop"]:
-            self.simulationSpeed *= self.simulationSpeedAmmount
+            self.simulation.speed *= self.simulation.speedIncriment
         elif self.keyDict["comma"] and not self.lastFrameKeyDict["comma"]:
-            self.simulationSpeed /= self.simulationSpeedAmmount
+            self.simulation.speed /= self.simulation.speedIncriment
 
         # toggling rewind
         if self.keyDict["r"] and not self.lastFrameKeyDict["r"]:
-            self.simulation.flipVelocities()
+            self.simulation.reverse()
 
         # pausing simulation (toggle)
         if self.keyDict["space"] and not self.lastFrameKeyDict["space"]:
-            if self.simulationPaused == True:
-                self.simulationPaused = False
-            else:
-                self.simulationPaused = True
+            self.simulation.paused = not self.simulation.paused
         
         
         # SIMULATION LOGIC
-        if not self.simulationPaused:
-            self.simulationOperations += self.simulationSpeed
-            while self.simulationOperations >= 1:     # adds the fractional speed to the accumulator (operations) each frame, and over time will perform correct number of operations each frame
-                self.simulation.tick(dt)
-                self.simulationOperations -= 1
+        self.simulation.frame(dt)
         # TEMP: remove prints
         # print(f"CAMERA: Displacement: {self.camera.displacement}, centre: {self.camera.centre}, zoom: {self.camera.zoom}, width: {self.camera.width}, height: {self.camera.height}")
         # print(f"Simulation speed: {self.simulationSpeed}")

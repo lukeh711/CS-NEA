@@ -90,7 +90,7 @@ All else follows relative to that
 
 
 ~~TODO~~
-- finish stuff
+- add acceleration estimator / educated distance cutoff for planet force calculations
 
 
 ~~SPRINTS~~

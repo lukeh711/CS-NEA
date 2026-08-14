@@ -3,15 +3,45 @@
     {
         "colours":
         {
-            "normal_border": "White",
-            "normal_bg": "SlateGray",
-            "normal_text": "White"
+            "normal_border": "#0E3B43",
+            "hovered_border": "#0E3B43",
+            "normal_bg": "#B5BAD0,#D5DAF0,#B5BAD0,0",
+            "hovered_bg": "#7389AE,#93A9CE,#7389AE,0",
+            "normal_text": "#050505",
+            "hovered_text": "#f5f5f5"
         },
         "misc":
         {
             "shape": "rounded_rectangle",
             "shape_corner_radius": "10",
             "border_width": "2"
+        }
+    },
+
+    "button.@image":
+    {
+        "images":
+        {
+            "position":"(0.0,0.0)"
+        }
+    },
+
+    "button.#play":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path":"assets/play-pause.png"
+            },
+            "hovered_image":
+            {
+                "path":"assets/play-pause.png"
+            },
+            "selected_image":
+            {
+                "path":"assets/play-pause.png"
+            }
         }
     }
 }

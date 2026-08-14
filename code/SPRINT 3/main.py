@@ -24,7 +24,7 @@ while game.running:
     # draw items onto the screen
     game.draw()
 
-    # next frame
+    # next frame56
     dt = clock.tick(60) / 1000
 
 pygame.quit()
