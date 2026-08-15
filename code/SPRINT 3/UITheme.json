@@ -1,20 +1,50 @@
 {
-    "button":
+    "defaults":
     {
         "colours":
         {
-            "normal_border": "#0E3B43",
-            "hovered_border": "#0E3B43",
-            "normal_bg": "#B5BAD0,#D5DAF0,#B5BAD0,0",
-            "hovered_bg": "#7389AE,#93A9CE,#7389AE,0",
+            "normal_border": "#001427",
+            "hovered_border": "#001427",
+            "selected_border": "#001427",
+            "active_border": "#001427",
+
+            "normal_bg": "#0E3B43,#2E5B63,#0E3B43,45",
+            "hovered_bg": "#2B5057,#4B7077,#2B5057,45",
+            "selected_bg": "#072835,#173845,#072835,45",
+            "active_bg": "#072835,#173845,#072835,45",
+
             "normal_text": "#050505",
-            "hovered_text": "#f5f5f5"
+            "hovered_text": "#050505",
+            "selected_text": "#050505",
+            "active_text": "#050505"
         },
         "misc":
         {
             "shape": "rounded_rectangle",
-            "shape_corner_radius": "10",
+            "shape_corner_radius": "5,5,5,5",
             "border_width": "2"
+        }
+    },
+    
+    "button":
+    {
+        "misc":
+        {
+            "shape": "rounded_rectangle",
+            "shape_corner_radius": "10,10,10,10"
+        }
+    },
+
+    "panel":
+    {
+        "colours":
+        {
+            "dark_bg":"#00142770"
+        },
+        "misc":
+        {
+            "shape": "rounded_rectangle",
+            "shape_corner_radius": "10,10,10,10"
         }
     },
 
@@ -27,18 +57,29 @@
     {
         "images":
         {
-            "normal_image":
-            {
-                "path":"assets/play-pause32.png"
-            },
-            "hovered_image":
-            {
-                "path":"assets/play-pause32.png"
-            },
-            "selected_image":
-            {
-                "path":"assets/play-pause32.png"
-            }
+            "normal_image":{"path":"assets/play32.png"},
+            "hovered_image":{"path":"assets/play32.png"},
+            "selected_image":{"path":"assets/play32.png"}
+        }
+    },
+
+    "#forwards":
+    {
+        "images":
+        {
+            "normal_image":{"path":"assets/forwards32.png"},
+            "hovered_image":{"path":"assets/forwards32.png"},
+            "selected_image":{"path":"assets/forwards32.png"}
+        }
+    },
+
+    "#backwards":
+    {
+        "images":
+        {
+            "normal_image":{"path":"assets/backwards32.png"},
+            "hovered_image":{"path":"assets/backwards32.png"},
+            "selected_image":{"path":"assets/backwards32.png"}
         }
     }
 }

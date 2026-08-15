@@ -21,6 +21,10 @@ class PhysicsObject:
     def selected(self):
         return self._selected
 
+    @property
+    def objectID(self):
+        return self._objectID
+
 
 # PLANET
 class Planet(PhysicsObject):
@@ -33,7 +37,7 @@ class Planet(PhysicsObject):
 class Camera:
     _zoom = 1.0
     _inverseZoom = 1.0
-    _zoomAmmount = 1.2   # the * step each zoom in or out takes
+    _zoomIncriment = 1.2   # the * step each zoom in or out takes
     _movementSpeed = 200 # the speed of the camera (in arbritrary units) (~200)
     _startingWidth = 10  # the target initial starting size of the camera
     _startingCentre = Vector(0,0)    # the target initial position for the centre of the camera
@@ -56,11 +60,11 @@ class Camera:
         self._displacement += positionIn * self._inverseZoom
     
     def zoomIn(self):
-        self._zoom *= self._zoomAmmount   # no rounding to reduce errors with large zooms in / out, irrespective of small insignificant floating point errors
+        self._zoom *= self._zoomIncriment   # no rounding to reduce errors with large zooms in / out, irrespective of small insignificant floating point errors
         self._zoomLogic()
     
     def zoomOut(self):
-        self._zoom /= self._zoomAmmount   # no rounding to reduce errors with large zooms in / out, irrespective of small insignificant floating point errors
+        self._zoom /= self._zoomIncriment   # no rounding to reduce errors with large zooms in / out, irrespective of small insignificant floating point errors
         self._zoomLogic()
 
     def _zoomLogic(self):
@@ -71,6 +75,20 @@ class Camera:
         self._width = self._screenWidth * self._inverseZoom
         self._height = self._screenHeight * self._inverseZoom
 
+    def speedUp(self, speedIncriment):
+        self._movementSpeed *= speedIncriment
+
+    def speedDown(self, speedIncriment):
+            self._movementSpeed /= speedIncriment
+
     @property
     def zoom(self):
         return self._zoom
+
+    @property
+    def centre(self):
+        return self._centre
+
+    @property
+    def screenCentreOffset(self):
+        return self._screenCentreOffset

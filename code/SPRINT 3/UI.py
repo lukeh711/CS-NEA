@@ -3,8 +3,9 @@ import pygame_gui
 from simulation import *
 
 class UI:
-    def __init__(self, screenIn):
+    def __init__(self, screenIn, simulationIn):
         self._screen = screenIn
+        self._simulation = simulationIn
         # initialise the GUI library
         self._manager = pygame_gui.UIManager((screenIn.get_width(), screenIn.get_height()), theme_path="UITheme.json")
 
@@ -19,15 +20,15 @@ class UI:
         selectionAdvancedPanelRect = selectionPanelRect.copy()  # advanced panel is the same size as normal for now
 
         # make panel objects
-        self._controlPanel = ControlPanel(self._manager, controlPanelRect, controlAdvancedPanelRect)     # bottom panel
-        self._selectionPanel = SelectionPanel(self._manager, selectionPanelRect, selectionAdvancedPanelRect)   # right panel
+        self._controlPanel = ControlPanel(self._manager, self._simulation, controlPanelRect, controlAdvancedPanelRect)     # bottom panel
+        self._selectionPanel = SelectionPanel(self._manager, self._simulation, selectionPanelRect, selectionAdvancedPanelRect)   # right panel
         self._panelList = [self._controlPanel, self._selectionPanel]
 
 
     def handleEvents(self, event):
         if event.type == pygame_gui.UI_BUTTON_PRESSED:  # TODO: increase this to include other events other than just button presses
             for panelObject in self._panelList:  # loops through each panel and checks if the event is relevant to the panel
-                if event.ui_element.panel == panelObject.name:
+                if event.ui_element.panel == panelObject._name:
                     panelObject.handleEvents(event)
                     continue    
         self._manager.process_events(event)
@@ -41,20 +42,21 @@ class UI:
 
 
 class Panel:
-    elementList = []
-    name = "base"
+    _elementList = []
+    _name = "base"
 
-    def __init__(self, managerIn, rectIn, advancedRectIn, advancedModeIn=False):
+    def __init__(self, managerIn, simulationIn, rectIn, advancedRectIn, advancedModeIn=False):
         self._manager = managerIn
+        self._simulation = simulationIn
         self._rect = rectIn
         self._advancedRect = advancedRectIn
         self._advancedMode = advancedModeIn
 
-        self.__makePanel()
-        self.__populatePanel()
+        self._makePanel()
+        self._populatePanel()
 
     # make the GUI panel using rect (normal or advanced depending on self._advancedMode)
-    def __makePanel(self):
+    def _makePanel(self):
         if self._advancedMode:
             self._x, self._y, self._w, self._h = self._advancedRect
             self._panel = pygame_gui.elements.UIPanel(self._advancedRect, manager=self._manager)
@@ -63,11 +65,11 @@ class Panel:
             self._panel = pygame_gui.elements.UIPanel(self._rect, manager=self._manager)
 
     # should always be overridden by subclass methods
-    def __populatePanel(self):
+    def _populatePanel(self):
         print(f"error: base class populatePanel method called for panel at {self._rect.x}, {self._rect.y}")
 
     # defining constructing a button
-    def __makeButton(self, positionTupleIn, textIn, IDIn, GUIClassIn=None, GUITagIn=None):    # TODO: GUI not styling the button with the objectID inputted vvv
+    def _makeButton(self, positionTupleIn, textIn, IDIn, GUIClassIn=None, GUITagIn=None):    # TODO: GUI not styling the button with the objectID inputted vvv
         # make the button
         newButton = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(*positionTupleIn), text=textIn, manager=self._manager, container=self._panel, object_id=pygame_gui.core.ObjectID(object_id=f"#{GUITagIn}" if GUITagIn else None, class_id=f"@{GUIClassIn}" if GUIClassIn else None))
         # assign it a custom ID and panel attribute to keep track of it
@@ -78,7 +80,7 @@ class Panel:
     
 
     # defining constructing a button using relative inputs
-    def __makeButtonRelative(self, positionTupleIn, textIn, IDIn, GUIClassIn=None, GUITagIn=None):
+    def _makeButtonRelative(self, positionTupleIn, textIn, IDIn, GUIClassIn=None, GUITagIn=None):
         # turning fractions into coordinates
         x, y, w, h = positionTupleIn
         x *= self._w
@@ -100,18 +102,18 @@ class Panel:
 
 # CONTROL PANEL
 class ControlPanel(Panel):
-    name = "control"
-    def __init__(self, managerIn, rectIn, advancedRectIn, advancedModeIn=False):
-        super().__init__(managerIn, rectIn, advancedRectIn, advancedModeIn)
+    _name = "control"
+    def __init__(self, managerIn, simulationIn, rectIn, advancedRectIn, advancedModeIn=False):
+        super().__init__(managerIn, simulationIn, rectIn, advancedRectIn, advancedModeIn)
 
-    def __populatePanel(self):
+    def _populatePanel(self):
         if self._advancedMode:
             pass
         else:
-            # self._makeButton((20, 10, 100, 40), "Test", "testButton")
-            self.__makeButtonRelative((0.05, 0.5, 100, 40), "Slower", "testButton")
-            self.__makeButtonRelative((0.15, 0.5, 100, 40), "", "pauseButton", "image", "play")
-            self.__makeButtonRelative((0.25, 0.5, 100, 40), "Faster", "testButton")
+            # self._makeButton((20, 10, 100, 40), "Test", "testButton", GUITagIn="test")
+            self._makeButtonRelative((0.1, 0.5, 100, 40), "", "backwardsButton", "image", "backwards")
+            self._makeButtonRelative((0.2, 0.5, 100, 40), "", "pauseButton", "image", "play")
+            self._makeButtonRelative((0.3, 0.5, 100, 40), "", "forwardsButton", "image", "forwards")
 
 
     def handleEvents(self, event):
@@ -119,39 +121,34 @@ class ControlPanel(Panel):
             print("Control button test works!")
         elif event.ui_element.id == "pauseButton":
             print("Pause button works!")
-            Simulation.pause()
+            self._simulation.pause()
+        elif event.ui_element.id == "forwardsButton":
+            print("forwards button works!")
+            self._simulation.speedUp()
+        elif event.ui_element.id == "backwardsButton":
+            print("backwards button works!")
+            self._simulation.speedDown()
 
 
 # SELECTION PANEL
 class SelectionPanel(Panel):
-    name = "selection"
-    def __init__(self, managerIn, rectIn, advancedRectIn, advancedModeIn=False):
-        super().__init__(managerIn, rectIn, advancedRectIn, advancedModeIn)
+    _name = "selection"
+    def __init__(self, managerIn, simulationIn, rectIn, advancedRectIn, advancedModeIn=False):
+        super().__init__(managerIn, simulationIn, rectIn, advancedRectIn, advancedModeIn)
 
-    def __populatePanel(self):
+    def _populatePanel(self):
         if self._advancedMode:
             pass
         else:
-            self.__makeButton((20, 10, 100, 40), "Test", "testButton")
+            self._makeButton((20, 10, 100, 40), "Test", "testButton")
 
     def handleEvents(self, event):
         if event.ui_element.id == "testButton":
             print("Selection button test works!")
-            Simulation.pause()
 
-# # assign any extra classes or tags to the GUI tags for custom theming
-# if GUIClassIn:
-#     if type(GUIClassIn) == str:
-#         newButton.class_ids.append(f"@{GUIClassIn}")
-#     elif type(GUIClassIn) == list:
-#         for currentClass in GUIClassIn:
-#             newButton.class_ids.append(f"@{currentClass}")
-# if GUITagIn:
-#     if type(GUITagIn) == str:
-#         newButton.object_ids.append(f"#{GUITagIn}")
-#     elif type(GUITagIn) == list:
-#         for tag in GUITagIn:
-#             newButton.object_ids.append(f"#{tag}")
+# in handleEvents:
+# if "#test" in event.ui_element.object_ids:
+#     print("testing the test!")
 # 
 # 
 # newButton = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(20, 10, 100, 40), text="", manager=self._manager, container=self._panel, object_id="#play")

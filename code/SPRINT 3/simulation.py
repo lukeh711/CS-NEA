@@ -81,3 +81,13 @@ class Simulation:
             currentObject.velocity *= -1
         # toggles the rewind bool attribute
         self._rewind = not self._rewind
+
+    def speedUp(self):
+        self._speed *= self._speedIncriment
+
+    def speedDown(self):
+        self._speed /= self._speedIncriment
+
+    @property
+    def objectList(self):
+        return self._objectList

@@ -8,7 +8,7 @@ from UI import *
 
 
 class Game:
-    running = True
+    _running = True
 
     # dict of all keys pressed last frame
     _lastFrameKeyDict = {
@@ -54,7 +54,7 @@ class Game:
         self._camera = Camera(self._screen.get_width(), self._screen.get_height())
         self._render = Render(self._camera, self._screen)
         self._simulation = Simulation()
-        self._UI = UI(self._screen)
+        self._UI = UI(self._screen, self._simulation)
 
         # create the UI elements
         self._UI.createUI()
@@ -144,13 +144,13 @@ class Game:
         # KEY PRESS LOGIC
         # camera movement
         if self._keyDict["left"]:
-            self._camera.move(Vector(-self._camera.movementSpeed, 0) * dt)
+            self._camera.move(Vector(-self._camera._movementSpeed, 0) * dt)
         if self._keyDict["right"]:
-            self._camera.move(Vector(self._camera.movementSpeed, 0) * dt)
+            self._camera.move(Vector(self._camera._movementSpeed, 0) * dt)
         if self._keyDict["up"]:
-            self._camera.move(Vector(0, self._camera.movementSpeed) * dt)
+            self._camera.move(Vector(0, self._camera._movementSpeed) * dt)
         if self._keyDict["down"]:
-            self._camera.move(Vector(0, -self._camera.movementSpeed) * dt)
+            self._camera.move(Vector(0, -self._camera._movementSpeed) * dt)
 
         # camera zoom control
         if self._keyDict["plus"] and not self._lastFrameKeyDict["plus"]:
@@ -160,20 +160,20 @@ class Game:
 
         # keys allowing slower or faster camera movement while held down
         if self._keyDict["shift"] and not self._lastFrameKeyDict["shift"]:
-            self._camera.movementSpeed *= 5
+            self._camera.speedUp(5)
         elif self._lastFrameKeyDict["shift"] and not self._keyDict["shift"]:
-            self._camera.movementSpeed /= 5
+            self._camera.speedDown(5)
 
         if self._keyDict["ctrl"] and not self._lastFrameKeyDict["ctrl"]:
-            self._camera.movementSpeed /= 5
+            self._camera.speedDown(5)
         elif self._lastFrameKeyDict["ctrl"] and not self._keyDict["ctrl"]:
-            self._camera.movementSpeed *= 5
+            self._camera.speedUp(5)
 
         # speeding up or slowing down simulation speed
         if self._keyDict["fullStop"] and not self._lastFrameKeyDict["fullStop"]:
-            self._simulation.speed *= self._simulation.speedIncriment
+            self._simulation.speedUp()
         elif self._keyDict["comma"] and not self._lastFrameKeyDict["comma"]:
-            self._simulation.speed /= self._simulation.speedIncriment
+            self._simulation.speedDown()
 
         # toggling rewind
         if self._keyDict["r"] and not self._lastFrameKeyDict["r"]:
@@ -196,7 +196,7 @@ class Game:
     #---rendering code---
     def draw(self):     #--3--#
         # clear last screen
-        self._render.fill("black")
+        self._render.background()
 
         # draw simulation objects
         for currentObject in self._simulation.objectList:
@@ -207,3 +207,7 @@ class Game:
 
         # send the new frame to the screen
         pygame.display.flip()
+
+    @property
+    def running(self):
+        return self._running
