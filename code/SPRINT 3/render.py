@@ -3,37 +3,37 @@ from objects import *
 
 class Render:
     def __init__(self, cameraIn, screenIn):
-        self.camera = cameraIn
-        self.screen = screenIn
+        self._camera = cameraIn
+        self._screen = screenIn
 
     # just draws shapes on the screen given the vector coords of those shapes and their dimentions
-    def fill(self, colour):
-        self.screen.fill(colour)
+    def _fill(self, colour):
+        self._screen.fill(colour)
     
-    def circle(self, positionIn, radius, colour):
+    def _circle(self, positionIn, radius, colour):
         # makes sure the planet can't dissapear entirely from being too small
         radius = max(1, radius)
         centre = (positionIn.getX(), positionIn.getY())
 
         # only renders it if it is currently within the bounds of the screen
         if (
-            centre[0] - radius < self.screen.get_width() and
-            centre[1] - radius < self.screen.get_height() and
+            centre[0] - radius < self._screen.get_width() and
+            centre[1] - radius < self._screen.get_height() and
             centre[0] + radius > 0 and
             centre[1] + radius > 0
         ):
-            pygame.draw.circle(self.screen, colour, centre, radius)
+            pygame.draw.circle(self._screen, colour, centre, radius)
 
 
 
     def planet(self, planet):
         # changing simulation coordinates to rendering coordinates
         # find displacement from centre, times that by the zoom then align it back so it renders from bottom left not centre
-        position = ((planet.position - self.camera.centre) * self.camera.zoom) + self.camera.screenCentreOffset
-        position = Vector(position.getX(), -position.getY()) + Vector(0, self.screen.get_height())
+        position = ((planet.position - self._camera.centre) * self._camera.zoom) + self._camera.screenCentreOffset
+        position = Vector(position.getX(), -position.getY()) + Vector(0, self._screen.get_height())
 
         # scaling planet's size based on zoom
-        radius = planet.radius * self.camera.zoom
+        radius = planet.radius * self._camera.zoom
 
         colour = planet.colour
         self.circle(position, radius, colour)

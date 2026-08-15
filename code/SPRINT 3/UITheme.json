@@ -18,29 +18,26 @@
         }
     },
 
-    "button.@image":
+    "@image":
     {
-        "images":
-        {
-            "position":"(0.0,0.0)"
-        }
+        
     },
 
-    "button.#play":
+    "#play":
     {
         "images":
         {
             "normal_image":
             {
-                "path":"assets/play-pause.png"
+                "path":"assets/play-pause32.png"
             },
             "hovered_image":
             {
-                "path":"assets/play-pause.png"
+                "path":"assets/play-pause32.png"
             },
             "selected_image":
             {
-                "path":"assets/play-pause.png"
+                "path":"assets/play-pause32.png"
             }
         }
     }

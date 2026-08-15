@@ -10,7 +10,6 @@ game = Game()
 game.start()
 
 # main game loop
-running = True
 while game.running:
     # TEMP: remove prints for screenshots
     # print("New frame")

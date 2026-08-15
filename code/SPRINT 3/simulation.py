@@ -2,79 +2,82 @@
 import physics
 
 class Simulation:
-    objectList = [] # list of all physics objects being simulated
-    speed = 1.0     # the overall speed of the simulation
-    speedIncriment = 1.5    # the ammount the simulations speed is multiplied and divided by each button press
-    operations = 0  # the rolling number of .tick operations to do each frame
-    rewind = False  # true if the simulation is playing backwards
-    paused = False
+    _objectList = [] # list of all physics objects being simulated
+    _speed = 1.0     # the overall speed of the simulation
+    _speedIncriment = 1.5    # the ammount the simulations speed is multiplied and divided by each button press
+    _operations = 0  # the rolling number of .tick operations to do each frame
+    _rewind = False  # true if the simulation is playing backwards
+    _paused = False
 
     def addObject(self, objectIn):    #add an object to the simulation
-        self.objectList.append(objectIn)
+        self._objectList.append(objectIn)
 
     def removeObject(self, objectIn): #remove an object from the simulation
-        for currentObject in self.objectList:
+        for currentObject in self._objectList:
             if currentObject is objectIn:
-                self.objectList.remove(objectIn)
+                self._objectList.remove(objectIn)
 
 
     # called each frame, has logic for pausing & simulation speed
     def frame(self, dt):
-        if not self.paused: # if paused, doesn't run physics
-            self.operations += self.speed
-            while self.operations >= 1:   # if simulation speed = 2, it will run all of the physics twice per tick
-                self.tick(dt)
-                self.operations -= 1
+        if not self._paused: # if paused, doesn't run physics
+            self._operations += self._speed
+            while self._operations >= 1:   # if simulation speed = 2, it will run all of the physics twice per tick
+                self._tick(dt)
+                self._operations -= 1
 
 
     # update all physics here
-    def tick(self, dt):
+    def _tick(self, dt):
         # clear each planet's forceDict
-        for currentObject in self.objectList:
+        for currentObject in self._objectList:
             currentObject.forceDict = {}
         # main physics updating all object attributes
-        for currentObject in self.objectList:
-            self.leapfrog(currentObject, dt)    # update all attributes of the current planet using the leapfrog method
+        for currentObject in self._objectList:
+            self._leapfrog(currentObject, dt)    # update all attributes of the current planet using the leapfrog method
     
 
     # changing all physics-related variables for the object
-    def leapfrog(self, objectIn, dt):
+    def _leapfrog(self, objectIn, dt):
         v = objectIn.velocity; r = objectIn.position; h = dt    # assign easier to understand var names
         rMid = physics.drift(v, r, h)
-        a = self.updateAcceleration(objectIn, rMid) # calculate acceleration & forces on the planet (also assigns self.acceleration to the new value)
+        a = self._updateAcceleration(objectIn, rMid) # calculate acceleration & forces on the planet (also assigns self.acceleration to the new value)
         vNew = physics.kick(a, v, h)
         rNew = physics.drift(vNew, rMid, h)
         objectIn.velocity = vNew; objectIn.position = rNew
 
     
-    def updateAcceleration(self, objectIn, positionIn):
+    def _updateAcceleration(self, objectIn, positionIn):
         objectIn.position = positionIn  # set position to rMid
-        self.updateForces(objectIn)     # update the force dictionary
-        self.calcResultantForce(objectIn)   # add all the forces in the force dictionary
+        self._updateForces(objectIn)     # update the force dictionary
+        self._calcResultantForce(objectIn)   # add all the forces in the force dictionary
         objectIn.acceleration = physics.calcAcceleration(objectIn.resultantForce, objectIn.mass)  # calculate acceleration
         return objectIn.acceleration
 
-    def updateForces(self, objectIn):   # find each of the forces effecting THIS object
-        for currentObject in self.objectList:   # loops through all planets in simulation
+    def _updateForces(self, objectIn):   # find each of the forces effecting THIS object
+        for currentObject in self._objectList:   # loops through all planets in simulation
             if not currentObject is objectIn:   # makes sure it's not itself
                 currentID = objectIn.objectID   # finds the objectID of THIS object
                 targetID = currentObject.objectID   # finds the objectID of the OTHER object
                 if not targetID in objectIn.forceDict.keys():    # makes sure it hasn't already been calculated
-                    pullForce = self.calcPull(objectIn, currentObject)      # EXPENSIVE: calculates the vector force pull between THIS and the OTHER
+                    pullForce = self._calcPull(objectIn, currentObject)      # EXPENSIVE: calculates the vector force pull between THIS and the OTHER
                     objectIn.forceDict[targetID] = pullForce        # assigns THIS object's planetID to be the calculated vector force in its forceDict
                     currentObject.forceDict[currentID] = -pullForce # assigns the OTHER object's planetID to be the negative of the calculated vector force in its forceDict
                 # else the force pair was already calculated by a previous object
                 
-    def calcPull(self, object1, object2):
+    def _calcPull(self, object1, object2):
         force = physics.calcForce(object1.position, object2.position, object1.mass, object2.mass)
         return force
     
-    def calcResultantForce(self, objectIn):
+    def _calcResultantForce(self, objectIn):
         objectIn.resultantForce = physics.addForce(objectIn.forceDict)
 
 
+    def pause(self):
+        self._paused = not self._paused
+
     def reverse(self):  # for rewinding the simulation
-        for currentObject in self.objectList:
+        for currentObject in self._objectList:
             currentObject.velocity *= -1
         # toggles the rewind bool attribute
-        self.rewind = not self.rewind
+        self._rewind = not self._rewind
