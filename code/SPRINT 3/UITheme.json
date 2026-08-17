@@ -10,7 +10,7 @@
 
             "normal_bg": "#0E3B43,#2E5B63,#0E3B43,45",
             "hovered_bg": "#2B5057,#4B7077,#2B5057,45",
-            "selected_bg": "#072835,#173845,#072835,45",
+            "selected_bg": "#0E3B43,#2E5B63,#0E3B43,45",
             "active_bg": "#072835,#173845,#072835,45",
 
             "normal_text": "#050505",
@@ -35,6 +35,33 @@
         }
     },
 
+    "check_box":
+    {
+        "colours":
+        {
+            "normal_border": "#47646A",
+            "hovered_border": "#47646A",
+            "selected_border": "#47646A",
+            "active_border": "#47646A"
+        },
+
+        "misc":
+        {
+            "border_width": "2"
+        }
+    },
+
+    "check_box.label":
+    {
+        "colours":
+        {
+            "normal_text": "#F5F5F5",
+            "hovered_text": "#F5F5F5",
+            "selected_text": "#F5F5F5",
+            "active_text": "#F5F5F5"
+        }
+    },
+
     "panel":
     {
         "colours":
@@ -52,6 +79,34 @@
     {
         
     },
+
+    "@green":
+    {
+        "colours":
+        {
+            "normal_bg": "#174B2C,#376B4C,#174B2C,45",
+            "hovered_bg": "#2D754A,#4D956A,#2D754A,45",
+            "selected_bg": "#0E2E1B,#2E4E3B,#0E2E1B,45",
+            "active_bg": "#0E2E1B,#2E4E3B,#0E2E1B,45"
+        }
+    },
+
+    "@red":
+    {
+        "colours":
+        {
+            "normal_bg": "#4C020E,#6C222E,#4C020E,45",
+            "hovered_bg": "#640313,#842333,#640313,45",
+            "selected_bg": "#3B020B,#5B222B,#3B020B,45",
+            "active_bg": "#3B020B,#5B222B,#3B020B,45",
+
+            "normal_text": "#000",
+            "hovered_text": "#000",
+            "selected_text": "#000",
+            "active_text": "#000"
+        }
+    },
+
 
     "#play":
     {

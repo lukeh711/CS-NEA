@@ -15,7 +15,7 @@ class UI:
         controlPanelRect.bottomleft = (0, self._screen.get_height())
         controlAdvancedPanelRect = controlPanelRect.copy()  # advanced panel is the same size as normal for now
 
-        selectionPanelRect = pygame.Rect(0, 0, 300, self._screen.get_height()-controlPanelRect.height)
+        selectionPanelRect = pygame.Rect(0, 0, self._screen.get_width()//3, self._screen.get_height()-controlPanelRect.height)
         selectionPanelRect.topright = (self._screen.get_width(), 0)
         selectionAdvancedPanelRect = selectionPanelRect.copy()  # advanced panel is the same size as normal for now
 
@@ -69,15 +69,14 @@ class Panel:
         print(f"error: base class populatePanel method called for panel at {self._rect.x}, {self._rect.y}")
 
     # defining constructing a button
-    def _makeButton(self, positionTupleIn, textIn, IDIn, GUIClassIn=None, GUITagIn=None):    # TODO: GUI not styling the button with the objectID inputted vvv
+    def _makeButton(self, positionTupleIn, textIn, IDIn, GUIClassIn=None, GUITagIn=None):
         # make the button
-        newButton = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(*positionTupleIn), text=textIn, manager=self._manager, container=self._panel, object_id=pygame_gui.core.ObjectID(object_id=f"#{GUITagIn}" if GUITagIn else None, class_id=f"@{GUIClassIn}" if GUIClassIn else None))
+        newButton = pygame_gui.elements.UIButton(pygame.Rect(*positionTupleIn), textIn, self._manager, self._panel, object_id=pygame_gui.core.ObjectID(object_id=f"#{GUITagIn}" if GUITagIn else None, class_id=f"@{GUIClassIn}" if GUIClassIn else None))
         # assign it a custom ID and panel attribute to keep track of it
         newButton.id, newButton.panel = IDIn, self._name
         
         # add it to this object's elementList
         self._elementList.append(newButton)
-    
 
     # defining constructing a button using relative inputs
     def _makeButtonRelative(self, positionTupleIn, textIn, IDIn, GUIClassIn=None, GUITagIn=None):
@@ -89,10 +88,31 @@ class Panel:
             x += self._w
         if y < 0:
             y += self._h
-        # turning coords in referencing the centre to referencing the corner
+        # turning coords from referencing the corner to referencing the centre
         x -= w/2
         y -= h/2
         self._makeButton((x, y, w, h), textIn, IDIn, GUIClassIn, GUITagIn)
+
+    def _makeCheckBox(self, positionTupleIn, textIn, IDIn, GUIClassIn=None, GUITagIn=None):
+        # make the checkbox
+        newButton = pygame_gui.elements.UICheckBox(pygame.Rect(*positionTupleIn), textIn, self._manager, self._panel, object_id=pygame_gui.core.ObjectID(object_id=f"#{GUITagIn}" if GUITagIn else None, class_id=f"@{GUIClassIn}" if GUIClassIn else None))
+        # assign it a custom ID and panel attribute to keep track of it
+        newButton.id, newButton.panel = IDIn, self._name
+
+    def _makeCheckBoxRelative(self, positionTupleIn, textIn, IDIn, GUIClassIn=None, GUITagIn=None):
+            # turning fractions into coordinates
+            x, y, w, h = positionTupleIn
+            x *= self._w
+            y *= self._h
+            if x < 0:
+                x += self._w
+            if y < 0:
+                y += self._h
+            # turning coords from referencing the corner to referencing the centre
+            x -= w/2
+            y -= h/2
+            self._makeCheckBox((x, y, w, h), textIn, IDIn, GUIClassIn, GUITagIn)
+
 
     def hide(self):
         self._panel.hide()
@@ -110,10 +130,13 @@ class ControlPanel(Panel):
         if self._advancedMode:
             pass
         else:
-            # self._makeButton((20, 10, 100, 40), "Test", "testButton", GUITagIn="test")
+            # self._makeButton((20, 10, 100, 40), "Test", "testButton")
+            #                                             text, ID, GUI class, GUI ID
             self._makeButtonRelative((0.1, 0.5, 100, 40), "", "backwardsButton", "image", "backwards")
             self._makeButtonRelative((0.2, 0.5, 100, 40), "", "pauseButton", "image", "play")
             self._makeButtonRelative((0.3, 0.5, 100, 40), "", "forwardsButton", "image", "forwards")
+            self._makeButtonRelative((0.8, 0.5, 100, 40), "Add Object", "addObject", "green")
+            self._makeButtonRelative((0.9, 0.5, 100, 40), "New Graph", "newGraph", "green")
 
 
     def handleEvents(self, event):
@@ -140,11 +163,17 @@ class SelectionPanel(Panel):
         if self._advancedMode:
             pass
         else:
-            self._makeButton((20, 10, 100, 40), "Test", "testButton")
+            # self._makeButton((20, 10, 100, 40), "Test", "testButton")
+            #                                             text, ID, GUI class, GUI ID
+            self._makeButtonRelative((0.25, 0.9, 120, 40), "Delete object", "deleteObject", "red", "")
+            self._makeCheckBoxRelative((0.1, 0.1, 40, 40), "Show", "idekreplacethis", "", "")
 
     def handleEvents(self, event):
-        if event.ui_element.id == "testButton":
+        ID = event.ui_element.id
+        if ID == "testButton":
             print("Selection button test works!")
+        if ID == "deleteObject":
+            print("Delete button works!")
 
 # in handleEvents:
 # if "#test" in event.ui_element.object_ids:
