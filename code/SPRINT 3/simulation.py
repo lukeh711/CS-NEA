@@ -17,6 +17,11 @@ class Simulation:
             if currentObject is objectIn:
                 self._objectList.remove(objectIn)
 
+    def findObject(self, IDIn):
+        for currentObject in self._objectList:
+            if currentObject.ID == IDIn:
+                return currentObject
+
 
     # called each frame, has logic for pausing & simulation speed
     def frame(self, dt):
@@ -57,8 +62,8 @@ class Simulation:
     def _updateForces(self, objectIn):   # find each of the forces effecting THIS object
         for currentObject in self._objectList:   # loops through all planets in simulation
             if not currentObject is objectIn:   # makes sure it's not itself
-                currentID = objectIn.objectID   # finds the objectID of THIS object
-                targetID = currentObject.objectID   # finds the objectID of the OTHER object
+                currentID = objectIn.ID   # finds the ID of THIS object
+                targetID = currentObject.ID   # finds the ID of the OTHER object
                 if not targetID in objectIn.forceDict.keys():    # makes sure it hasn't already been calculated
                     pullForce = self._calcPull(objectIn, currentObject)      # EXPENSIVE: calculates the vector force pull between THIS and the OTHER
                     objectIn.forceDict[targetID] = pullForce        # assigns THIS object's planetID to be the calculated vector force in its forceDict
@@ -72,6 +77,17 @@ class Simulation:
     def _calcResultantForce(self, objectIn):
         objectIn.resultantForce = physics.addForce(objectIn.forceDict)
 
+
+    def selectionDetection(self, mousePosition, UI):
+        currentSelected = False
+        found = False
+        for currentObject in self.objectList:
+            currentSelected = currentObject.selectionDetection(mousePosition, UI)
+            if currentSelected:
+                found = True
+                
+        if not found:
+            UI.disselect()
 
     def pause(self):
         self._paused = not self._paused

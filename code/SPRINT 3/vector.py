@@ -59,6 +59,14 @@ class Vector:
         result = -self.xy
         return Vector(*result)
 
+    # iteratively unpacking
+    def __iter__(self):
+        yield self.xy[0]
+        yield self.xy[1]
+
+    def copy(self):
+        return Vector(*self.xy.copy())
+
     # returning the magnitude of the vector using pythagoras
     def length(self):
         return (self.xy[0]**2 + self.xy[1]**2)**0.5

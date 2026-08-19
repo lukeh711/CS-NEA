@@ -54,6 +54,7 @@ Performance:
 - accuracy slider to change how many physics ticks per frame (inc <1?) while not changing simulation speed
 - slider to determine how far forward the trajectory arrow predicts (based on performance)
 - calculating F, a and pos: using heuristics to estimate a impact per planet and have (adjustable?) cutoff? or even have a (togglable/auto toggled based on distance to nearest planet / no objects?) distance cutoff?
+- drag to move camera - using mousemotion vars
 
 
 ~~EQUATIONS~~

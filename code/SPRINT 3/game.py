@@ -1,5 +1,4 @@
 import pygame   # 2 temps
-import pygame_gui
 from vector import *
 from render import *
 from objects import *
@@ -12,6 +11,9 @@ class Game:
 
     # dict of all keys pressed last frame
     _lastFrameKeyDict = {
+        "leftMouse": False,
+        "middleMouse": False,
+        "rightMouse": False,
         "space": False,
         "shift": False,
         "ctrl": False,
@@ -28,6 +30,9 @@ class Game:
 
     # dict of all keys pressed this frame
     _keyDict = {
+        "leftMouse": False,
+        "middleMouse": False,
+        "rightMouse": False,
         "space": False,
         "shift": False,
         "ctrl": False,
@@ -50,7 +55,7 @@ class Game:
     #---code run at startup---
     def start(self):    #--0--#
         # initialise system objects
-        self._screen = pygame.display.set_mode((1280, 720))
+        self._screen = pygame.display.set_mode((1920, 1080))
         self._camera = Camera(self._screen.get_width(), self._screen.get_height())
         self._render = Render(self._camera, self._screen)
         self._simulation = Simulation()
@@ -60,9 +65,9 @@ class Game:
         self._UI.createUI()
 
         # add some initial objects into simulation.py
-        testPlanet1 = Planet(objectIDIn = 0, velocityIn=Vector(0, 1), positionIn=Vector(-1,0), radiusIn=0.1, massIn=3.003e-6)
-        testPlanet2 = Planet(objectIDIn = 1, velocityIn=Vector(0, -1), positionIn=Vector(1,0), radiusIn=0.1, massIn=3.003e-6, colourIn="red")
-        testPlanet3 = Planet(objectIDIn = 2, velocityIn=Vector(0, 0), positionIn=Vector(0,0), radiusIn=0.3, massIn=1.0, colourIn="orange")
+        testPlanet1 = Planet(IDIn = 0, velocityIn=Vector(0, 1), positionIn=Vector(-1,0), radiusIn=0.1, massIn=3.003e-6)
+        testPlanet2 = Planet(IDIn = 1, velocityIn=Vector(0, -1), positionIn=Vector(1,0), radiusIn=0.1, massIn=3.003e-6, colourIn="red")
+        testPlanet3 = Planet(IDIn = 2, velocityIn=Vector(0, 0), positionIn=Vector(0,0), radiusIn=0.3, massIn=1.0, colourIn="orange")
         self._simulation.addObject(testPlanet1)
         self._simulation.addObject(testPlanet2)
         self._simulation.addObject(testPlanet3)
@@ -71,17 +76,20 @@ class Game:
     #---keyboard inputs---
     def handleEvents(self): #--1--#
         # shifting all current values to old values
-        keyList = list(self._keyDict.keys())
         for i, key in enumerate(self._keyDict):
             self._lastFrameKeyDict[key] = self._keyDict[key]
 
+        # loops through each event
         for event in pygame.event.get():
+            # handle UI events first
+            self._UI.handleEvents(event)
+
             # closing nicely when X button pressed
             if event.type == pygame.QUIT:
                 self._running = False
-            
+
             # key press detection
-            if event.type == pygame.KEYDOWN:
+            elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:                    # escape
                     # TEMP: closes when escape is pressed
                     self._running = False
@@ -109,7 +117,7 @@ class Game:
                     self._keyDict["comma"] = True
                 elif event.key == pygame.K_r:                       # r
                     self._keyDict["r"] = True
-            
+
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:                     # space
                     self._keyDict["space"] = False
@@ -136,7 +144,38 @@ class Game:
                 elif event.key == pygame.K_r:                       # r
                     self._keyDict["r"] = False
 
-            self._UI.handleEvents(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    self._keyDict["leftMouse"] = True
+                elif event.button == 2:
+                    self._keyDict["middleMouse"] = True
+                elif event.button == 3:
+                    self._keyDict["rightMouse"] = True
+
+            elif event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    self._keyDict["leftMouse"] = False
+                elif event.button == 2:
+                    self._keyDict["middleMouse"] = False
+                elif event.button == 3:
+                    self._keyDict["rightMouse"] = False
+
+            elif event.type == pygame.MOUSEMOTION:
+                # make mousePosition and mouseMotion for screen and simulation, and mouseMotionButtons for what buttons were pressed while moving the mouse
+                # NOTE: mouseMotionButtons is seperate from leftMouse/middleMouse/rightMouse, as mouseMotionButtons only updates when the mouse is moving
+                mousePositionScreenTuple = event.pos
+                self.mousePositionScreen = Vector(*mousePositionScreenTuple)
+                self.mousePosition = self._render.screenToSimulationCoords(self.mousePositionScreen)
+                mouseMotionScreen = event.rel
+                self.mouseMotionScreen = Vector(*mouseMotionScreen)
+                self.mouseMotion = self._render.screenToSimulationMotion(self.mouseMotionScreen)
+                self.mouseMotionButtons = event.buttons
+
+        # self.mouseButtonsPressed = pygame.mouse.get_pressed(3)
+        # mousePositionScreenTuple = pygame.mouse.get_pos()
+        # self.mousePositionScreen = Vector(*mousePositionScreenTuple)
+        # self.mousePosition = self._render.screenToSimulationCoords(self.mousePositionScreen)
+        # print(self.mousePosition)
 
 
     #---main code---
@@ -182,7 +221,14 @@ class Game:
         # pausing simulation (toggle)
         if self._keyDict["space"] and not self._lastFrameKeyDict["space"]:
             self._simulation.pause()
-        
+
+        if self._keyDict["leftMouse"] and not self._lastFrameKeyDict["leftMouse"]:
+            if not self._UI.mouseOnUI(self.mousePositionScreen):
+                self._simulation.selectionDetection(self.mousePosition, self._UI)
+
+        # ensuring long pauses from breakpoints or window movement doesn't break the physics engine
+        if dt > 0.2:
+            dt = 0.2
         
         # SIMULATION LOGIC
         self._simulation.frame(dt)

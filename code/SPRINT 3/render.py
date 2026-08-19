@@ -2,6 +2,8 @@ import pygame
 from objects import *
 
 class Render:
+    selectedBorder = 2
+    selectedColour = "white"
     def __init__(self, cameraIn, screenIn):
         self._camera = cameraIn
         self._screen = screenIn
@@ -44,14 +46,15 @@ class Render:
 
     def _planet(self, planet):
         # changing simulation coordinates to rendering coordinates
-        # find displacement from centre, times that by the zoom then align it back so it renders from bottom left not centre
-        position = ((planet.position - self._camera.centre) * self._camera.zoom) + self._camera.screenCentreOffset
-        position = Vector(position.getX(), -position.getY()) + Vector(0, self._screen.get_height())
+        position = self.simulationToScreenCoords(planet.position)
 
         # scaling planet's size based on zoom
         radius = planet.radius * self._camera.zoom
 
         colour = planet.colour
+        if planet.selected:
+            self._circle(position, radius+self.selectedBorder, self.selectedColour)
+
         self._circle(position, radius, colour)
     
     # takes in any supported object and renders it based on the object type
@@ -59,4 +62,23 @@ class Render:
         if isinstance(objectIn, Planet):
             self._planet(objectIn)
         else:
-            print(f"Tried to render unsupported object: {objectIn} of type {type(objectIn)}")
+            print(f"Tried to render unsupported object (ID: {objectIn.ID}) of type {type(objectIn)}")
+
+
+    def simulationToScreenCoords(self, coordsIn):   # takes in and returns a vector object
+        coordsIn = coordsIn.copy()
+        # find displacement from centre, times that by the zoom then align it back so it renders from bottom left not centre
+        coords = ((coordsIn - self._camera.centre) * self._camera.zoom) + self._camera.screenCentreOffset
+        coordsOut = Vector(coords.getX(), self._screen.get_height() - coords.getY())
+        return coordsOut
+
+    def screenToSimulationCoords(self, coordsIn):   # takes in and returns a vector object
+        coordsIn = coordsIn.copy()
+        # translates the simulation coordinates to the screen coordinates
+        coords = Vector(coordsIn.getX(), self._screen.get_height() - coordsIn.getY())
+        coordsOut = ((coords - self._camera.screenCentreOffset) / self._camera.zoom) + self._camera.centre
+        return coordsOut
+
+    def screenToSimulationMotion(self, motionIn):
+        motionOut = motionIn * self._camera.inverseZoom
+        return motionOut

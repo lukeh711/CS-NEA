@@ -7,29 +7,37 @@ class PhysicsObject:
     acceleration = Vector(0, 0)
     _selected = False
 
-    def __init__(self, objectIDIn, positionIn, radiusIn, velocityIn=Vector(0, 0), massIn=0):
-        self._objectID = objectIDIn          # ID for working with different objects
+    def __init__(self, IDIn, positionIn, radiusIn, velocityIn=Vector(0, 0), massIn=0):
+        self._ID = IDIn          # ID for working with different objects
         self.position = positionIn          # position
         self.radius = radiusIn              # radius
         self.mass = massIn                  # mass
         self.velocity = velocityIn          # (optional) velocity vector
 
-    def select(self):
-        pass
+    def selectionDetection(self, mousePosition, UI):
+        x = mousePosition.getX(); y = mousePosition.getY(); centreX = self.position.getX(); centreY = self.position.getY(); radius = self.radius
+        if x >= centreX - radius and x <= centreX + radius and y >= centreY - radius and y <= centreY + radius:
+            self._selected = True
+            UI.changeSelected(self.ID)
+            return True
+        else:
+            if self._selected:
+                self._selected = False
+            return False
 
     @property
     def selected(self):
         return self._selected
 
     @property
-    def objectID(self):
-        return self._objectID
+    def ID(self):
+        return self._ID
 
 
 # PLANET
 class Planet(PhysicsObject):
-    def __init__(self, objectIDIn, positionIn, radiusIn, velocityIn=Vector(0, 0), massIn=6e24, colourIn="blue"):
-        super().__init__(objectIDIn, positionIn, radiusIn, velocityIn, massIn)
+    def __init__(self, IDIn, positionIn, radiusIn, velocityIn=Vector(0, 0), massIn=6e24, colourIn="blue"):
+        super().__init__(IDIn, positionIn, radiusIn, velocityIn, massIn)
         self.colour = colourIn              # colour
 
 
@@ -84,6 +92,10 @@ class Camera:
     @property
     def zoom(self):
         return self._zoom
+
+    @property
+    def inverseZoom(self):
+        return self._inverseZoom
 
     @property
     def centre(self):

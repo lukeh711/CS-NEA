@@ -21,17 +21,32 @@ class UI:
 
         # make panel objects
         self._controlPanel = ControlPanel(self._manager, self._simulation, controlPanelRect, controlAdvancedPanelRect)     # bottom panel
-        self._selectionPanel = SelectionPanel(self._manager, self._simulation, selectionPanelRect, selectionAdvancedPanelRect)   # right panel
+        self._selectionPanel = SelectionPanel(self._manager, self._simulation, selectionPanelRect, selectionAdvancedPanelRect, hidden=True)   # right panel
         self._panelList = [self._controlPanel, self._selectionPanel]
 
 
     def handleEvents(self, event):
-        if event.type == pygame_gui.UI_BUTTON_PRESSED:  # TODO: increase this to include other events other than just button presses
+        self._manager.process_events(event)
+        if hasattr(event, "ui_element"):    # checks if the event is UI related
             for panelObject in self._panelList:  # loops through each panel and checks if the event is relevant to the panel
                 if event.ui_element.panel == panelObject._name:
                     panelObject.handleEvents(event)
-                    continue    
-        self._manager.process_events(event)
+                    continue
+
+    def mouseOnUI(self, mousePosition):
+        for panel in self._panelList:
+            if panel.mouseOnPanel(mousePosition):
+                return True
+        else:
+            return False
+
+    def changeSelected(self, IDIn):
+        self._selectionPanel.show()
+        self._selectionPanel.changeSelected(IDIn)
+
+    def disselect(self):
+        self._selectionPanel.hide()
+        self._selectionPanel.changeSelected(None)
 
     def update(self, dt):
         self._manager.update(dt)
@@ -45,7 +60,7 @@ class Panel:
     _elementList = []
     _name = "base"
 
-    def __init__(self, managerIn, simulationIn, rectIn, advancedRectIn, advancedModeIn=False):
+    def __init__(self, managerIn, simulationIn, rectIn, advancedRectIn, advancedModeIn=False, hidden=False):
         self._manager = managerIn
         self._simulation = simulationIn
         self._rect = rectIn
@@ -54,6 +69,9 @@ class Panel:
 
         self._makePanel()
         self._populatePanel()
+
+        if hidden:
+            self.hide()
 
     # make the GUI panel using rect (normal or advanced depending on self._advancedMode)
     def _makePanel(self):
@@ -73,7 +91,7 @@ class Panel:
         # make the button
         newButton = pygame_gui.elements.UIButton(pygame.Rect(*positionTupleIn), textIn, self._manager, self._panel, object_id=pygame_gui.core.ObjectID(object_id=f"#{GUITagIn}" if GUITagIn else None, class_id=f"@{GUIClassIn}" if GUIClassIn else None))
         # assign it a custom ID and panel attribute to keep track of it
-        newButton.id, newButton.panel = IDIn, self._name
+        newButton.ID, newButton.panel = IDIn, self._name
         
         # add it to this object's elementList
         self._elementList.append(newButton)
@@ -97,7 +115,7 @@ class Panel:
         # make the checkbox
         newButton = pygame_gui.elements.UICheckBox(pygame.Rect(*positionTupleIn), textIn, self._manager, self._panel, object_id=pygame_gui.core.ObjectID(object_id=f"#{GUITagIn}" if GUITagIn else None, class_id=f"@{GUIClassIn}" if GUIClassIn else None))
         # assign it a custom ID and panel attribute to keep track of it
-        newButton.id, newButton.panel = IDIn, self._name
+        newButton.ID, newButton.panel = IDIn, self._name
 
     def _makeCheckBoxRelative(self, positionTupleIn, textIn, IDIn, GUIClassIn=None, GUITagIn=None):
             # turning fractions into coordinates
@@ -113,6 +131,31 @@ class Panel:
             y -= h/2
             self._makeCheckBox((x, y, w, h), textIn, IDIn, GUIClassIn, GUITagIn)
 
+    def _makeTextInput(self, positionTupleIn, IDIn, GUIClassIn=None, GUITagIn=None):
+        # make the checkbox
+        newButton = pygame_gui.elements.UITextEntryLine(pygame.Rect(*positionTupleIn), self._manager, self._panel, object_id=pygame_gui.core.ObjectID(object_id=f"#{GUITagIn}" if GUITagIn else None, class_id=f"@{GUIClassIn}" if GUIClassIn else None))
+        # assign it a custom ID and panel attribute to keep track of it
+        newButton.ID, newButton.panel = IDIn, self._name
+
+    def _makeTextInputRelative(self, positionTupleIn, IDIn, GUIClassIn=None, GUITagIn=None):
+        # turning fractions into coordinates
+        x, y, w, h = positionTupleIn
+        x *= self._w
+        y *= self._h
+        if x < 0:
+            x += self._w
+        if y < 0:
+            y += self._h
+        # turning coords from referencing the corner to referencing the centre
+        x -= w/2
+        y -= h/2
+        self._makeTextInput((x, y, w, h), IDIn, GUIClassIn, GUITagIn)
+
+    def mouseOnPanel(self, mousePosition):
+        if self._advancedMode:
+            return self._advancedRect.collidepoint(*mousePosition)
+        else:
+            return self._rect.collidepoint(*mousePosition)
 
     def hide(self):
         self._panel.hide()
@@ -123,8 +166,8 @@ class Panel:
 # CONTROL PANEL
 class ControlPanel(Panel):
     _name = "control"
-    def __init__(self, managerIn, simulationIn, rectIn, advancedRectIn, advancedModeIn=False):
-        super().__init__(managerIn, simulationIn, rectIn, advancedRectIn, advancedModeIn)
+    def __init__(self, managerIn, simulationIn, rectIn, advancedRectIn, advancedModeIn=False, hidden=False):
+        super().__init__(managerIn, simulationIn, rectIn, advancedRectIn, advancedModeIn, hidden)
 
     def _populatePanel(self):
         if self._advancedMode:
@@ -140,47 +183,57 @@ class ControlPanel(Panel):
 
 
     def handleEvents(self, event):
-        if event.ui_element.id == "testButton":
-            print("Control button test works!")
-        elif event.ui_element.id == "pauseButton":
-            print("Pause button works!")
-            self._simulation.pause()
-        elif event.ui_element.id == "forwardsButton":
-            print("forwards button works!")
-            self._simulation.speedUp()
-        elif event.ui_element.id == "backwardsButton":
-            print("backwards button works!")
-            self._simulation.speedDown()
+        ID = event.ui_element.ID
+        if event.type == pygame_gui.UI_BUTTON_PRESSED:
+            if ID == "testButton":
+                print("Control button test works!")
+            elif ID == "pauseButton":
+                print("Pause button works!")
+                self._simulation.pause()
+            elif ID == "forwardsButton":
+                print("forwards button works!")
+                self._simulation.speedUp()
+            elif ID == "backwardsButton":
+                print("backwards button works!")
+                self._simulation.speedDown()
 
 
 # SELECTION PANEL
 class SelectionPanel(Panel):
     _name = "selection"
-    def __init__(self, managerIn, simulationIn, rectIn, advancedRectIn, advancedModeIn=False):
-        super().__init__(managerIn, simulationIn, rectIn, advancedRectIn, advancedModeIn)
+    def __init__(self, managerIn, simulationIn, rectIn, advancedRectIn, advancedModeIn=False, hidden=False):
+        super().__init__(managerIn, simulationIn, rectIn, advancedRectIn, advancedModeIn, hidden)
 
     def _populatePanel(self):
         if self._advancedMode:
             pass
         else:
             # self._makeButton((20, 10, 100, 40), "Test", "testButton")
-            #                                             text, ID, GUI class, GUI ID
+            #                                       rect, (text), ID, (GUI class), (GUI ID)
             self._makeButtonRelative((0.25, 0.9, 120, 40), "Delete object", "deleteObject", "red", "")
             self._makeCheckBoxRelative((0.1, 0.1, 40, 40), "Show", "idekreplacethis", "", "")
+            self._makeTextInputRelative((0.2, 0.3, 100, 40), "testTextInput")
+            
 
     def handleEvents(self, event):
-        ID = event.ui_element.id
-        if ID == "testButton":
-            print("Selection button test works!")
-        if ID == "deleteObject":
-            print("Delete button works!")
+        ID = event.ui_element.ID
+        if event.type == pygame_gui.UI_BUTTON_PRESSED:
+            if ID == "testButton":
+                print("Selection button test works!")
+            if ID == "deleteObject":
+                print("Delete button works!")
+
+    def changeSelected(self, IDIn):
+        if IDIn is not None:
+            print(f"selected is now {IDIn}")
+            self.selectedObject = self._simulation.findObject(IDIn)
+
+    
+            
 
 # in handleEvents:
 # if "#test" in event.ui_element.object_ids:
 #     print("testing the test!")
-# 
-# 
-# newButton = pygame_gui.elements.UIButton(relative_rect=pygame.Rect(20, 10, 100, 40), text="", manager=self._manager, container=self._panel, object_id="#play")
 
 
 # var1.kill() to remove
