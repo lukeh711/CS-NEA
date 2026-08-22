@@ -24,6 +24,6 @@ while game.running:
     game.draw()
 
     # next frame
-    dt = clock.tick(60) / 1000
+    dt = clock.tick(game.framerate) / 1000
 
 pygame.quit()

@@ -8,6 +8,7 @@ class Simulation:
     _operations = 0  # the rolling number of .tick operations to do each frame
     _rewind = False  # true if the simulation is playing backwards
     _paused = False
+    _simulationUses = "fixed"   # use "fixed" to have a fixed timestep each calculation (more orbitally accurate), use "dynamic" to use dt for h (more clock-accurate)
 
     def addObject(self, objectIn):    #add an object to the simulation
         self._objectList.append(objectIn)
@@ -24,11 +25,16 @@ class Simulation:
 
 
     # called each frame, has logic for pausing & simulation speed
-    def frame(self, dt):
+    def frame(self, dt, framerate):
         if not self._paused: # if paused, doesn't run physics
             self._operations += self._speed
             while self._operations >= 1:   # if simulation speed = 2, it will run all of the physics twice per tick
-                self._tick(dt)
+                if self._simulationUses == "fixed":
+                    self._tick(1/framerate)
+                elif self._simulationUses == "dynamic":
+                    self._tick(dt)
+                else:
+                    raise ValueError(f"Unrecognised simulation mode: {self._simulationUses}")
                 self._operations -= 1
 
 

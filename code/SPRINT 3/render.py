@@ -62,7 +62,7 @@ class Render:
         if isinstance(objectIn, Planet):
             self._planet(objectIn)
         else:
-            print(f"Tried to render unsupported object (ID: {objectIn.ID}) of type {type(objectIn)}")
+            raise TypeError(f"Tried to render unsupported object (ID: {objectIn.ID}) of type {type(objectIn)}")
 
 
     def simulationToScreenCoords(self, coordsIn):   # takes in and returns a vector object

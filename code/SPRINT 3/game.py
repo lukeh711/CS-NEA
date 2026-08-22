@@ -8,6 +8,7 @@ from UI import *
 
 class Game:
     _running = True
+    _framerate = 60
 
     # dict of all keys pressed last frame
     _lastFrameKeyDict = {
@@ -231,7 +232,7 @@ class Game:
             dt = 0.2
         
         # SIMULATION LOGIC
-        self._simulation.frame(dt)
+        self._simulation.frame(dt, self.framerate)
         # TEMP: remove prints
         # print(f"CAMERA: Displacement: {self._camera.displacement}, centre: {self._camera.centre}, zoom: {self._camera.zoom}, width: {self._camera.width}, height: {self._camera.height}")
         # print(f"Simulation speed: {self._simulationSpeed}")
@@ -257,3 +258,7 @@ class Game:
     @property
     def running(self):
         return self._running
+
+    @property
+    def framerate(self):
+        return self._framerate

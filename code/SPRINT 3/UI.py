@@ -84,7 +84,7 @@ class Panel:
 
     # should always be overridden by subclass methods
     def _populatePanel(self):
-        print(f"error: base class populatePanel method called for panel at {self._rect.x}, {self._rect.y}")
+        raise RuntimeError(f"error: base class populatePanel method called for panel at {self._rect.x}, {self._rect.y}")
 
     # defining constructing a button
     def _makeButton(self, positionTupleIn, textIn, IDIn, GUIClassIn=None, GUITagIn=None):
