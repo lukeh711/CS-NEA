@@ -56,7 +56,7 @@ class Game:
     #---code run at startup---
     def start(self):    #--0--#
         # initialise system objects
-        self._screen = pygame.display.set_mode((1920, 1080))
+        self._screen = pygame.display.set_mode((1280, 720))
         self._camera = Camera(self._screen.get_width(), self._screen.get_height())
         self._render = Render(self._camera, self._screen)
         self._simulation = Simulation()
