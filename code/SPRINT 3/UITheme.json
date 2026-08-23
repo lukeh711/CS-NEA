@@ -62,6 +62,17 @@
         }
     },
 
+    "text_box":
+    {
+        "colours":
+        {
+            "normal_text": "#F5F5F5",
+            "hovered_text": "#F5F5F5",
+            "selected_text": "#F5F5F5",
+            "active_text": "#F5F5F5"
+        }
+    },
+
     "panel":
     {
         "colours":
