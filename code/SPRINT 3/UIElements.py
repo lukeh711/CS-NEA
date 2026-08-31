@@ -1,6 +1,7 @@
 import pygame
 import pygame_gui
 from simulation import *
+from math import *
 
 
 #------GUI-ELEMENT------
@@ -240,6 +241,7 @@ class SelectionPanel(Panel):
             self._makeButtonRelative((0.25, 0.9, 120, 40), "Delete object", "deleteObject", "red", "")
             self._makeCheckBoxRelative((0.1, 0.1, 40, 40), "Show", "idekreplacethis", "", "")
             self._makeTextInputRelative((0.2, 0.3, 100, 40), "testTextInput")
+            self._makeTextInputRelative((0.2, 0.4, 100, 40), "horizontalVelocity")
             
 
     def handleEvents(self, event):
@@ -267,9 +269,24 @@ class SelectionPanel(Panel):
                     print("Selection button test works!")
                 if ID == "deleteObject":
                     self.confirmDeleteSelection()
+            # elif event.type == pygame_gui.UI_TEXT_ENTRY_CHANGED
+            elif event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
+                print("Entered text:", event.text)
 
     def update(self):
-        pass
+        # run each frame and update any elements that update regularly
+        for element in self._elementList:
+            if element.visible:
+                if isinstance(element, pygame_gui.elements.UITextEntryLine):
+                    if element.is_focused == False:
+                        self.updateTextInput(element)
+
+    def updateTextInput(self, elementIn):
+        if elementIn.ID == "testTextInput":
+            print("Test!")
+        elif elementIn.ID == "horizontalVelocity":
+            value = self.selectedObject.velocity[0]
+            elementIn.set_text(round(value, -int(floor(log10(abs(value))))))
 
     def changeSelected(self, IDIn):
         if IDIn is not None:

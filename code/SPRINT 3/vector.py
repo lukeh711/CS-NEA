@@ -64,6 +64,12 @@ class Vector:
         yield self.xy[0]
         yield self.xy[1]
 
+    def __getitem__(self, key):
+        if key not in [0, 1]:
+            raise ValueError("Key value for vector out of range")
+        else:
+            return self.xy[key]
+
     def copy(self):
         return Vector(*self.xy.copy())
 
