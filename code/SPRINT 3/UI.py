@@ -47,6 +47,8 @@ class UI:
 
     def update(self, dt):
         self._manager.update(dt)
+        for panel in self._panelList:
+            panel.update()
 
     def drawUI(self):
         self._manager.draw_ui(self._screen)

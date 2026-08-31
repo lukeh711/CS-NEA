@@ -214,6 +214,9 @@ class ControlPanel(Panel):
                 print("backwards button works!")
                 self._simulation.speedDown()
 
+    def update(self):
+        pass
+
 
 # SELECTION PANEL
 class SelectionPanel(Panel):
@@ -264,6 +267,9 @@ class SelectionPanel(Panel):
                     print("Selection button test works!")
                 if ID == "deleteObject":
                     self.confirmDeleteSelection()
+
+    def update(self):
+        pass
 
     def changeSelected(self, IDIn):
         if IDIn is not None:
