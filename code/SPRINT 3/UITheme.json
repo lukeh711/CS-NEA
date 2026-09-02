@@ -8,6 +8,7 @@
             "selected_border": "#001427",
             "active_border": "#001427",
 
+            "dark_bg": "#001427,#03273A,#001427,45",
             "normal_bg": "#0E3B43,#2E5B63,#0E3B43,45",
             "hovered_bg": "#2B5057,#4B7077,#2B5057,45",
             "selected_bg": "#0E3B43,#2E5B63,#0E3B43,45",
@@ -63,6 +64,22 @@
     },
 
     "text_box":
+    {
+        "colours":
+        {
+            "normal_text": "#F5F5F5",
+            "hovered_text": "#F5F5F5",
+            "selected_text": "#F5F5F5",
+            "active_text": "#F5F5F5"
+        },
+
+        "misc":
+        {
+            "padding": "8,1"
+        }
+    },
+
+    "text_entry_line":
     {
         "colours":
         {

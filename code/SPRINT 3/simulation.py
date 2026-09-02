@@ -95,8 +95,16 @@ class Simulation:
         if not found:
             UI.disselect()
 
-    def pause(self):
+    def pauseToggle(self):
         self._paused = not self._paused
+
+    def pause(self):
+        if not self._paused:
+            self._paused = True
+
+    def play(self):
+        if self._paused:
+            self._paused = False
 
     def reverse(self):  # for rewinding the simulation
         for currentObject in self._objectList:
@@ -113,3 +121,7 @@ class Simulation:
     @property
     def objectList(self):
         return self._objectList
+
+    @property
+    def paused(self):
+        return self._paused

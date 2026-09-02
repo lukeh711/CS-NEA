@@ -70,6 +70,13 @@ class Vector:
         else:
             return self.xy[key]
 
+    def __setitem__(self, index, value):
+        if index not in [0, 1]:
+            raise ValueError("Index value for vector out of range")
+        else:
+            self.xy[index] = value
+            return  True
+
     def copy(self):
         return Vector(*self.xy.copy())
 

@@ -221,7 +221,7 @@ class Game:
 
         # pausing simulation (toggle)
         if self._keyDict["space"] and not self._lastFrameKeyDict["space"]:
-            self._simulation.pause()
+            self._simulation.pauseToggle()
 
         if self._keyDict["leftMouse"] and not self._lastFrameKeyDict["leftMouse"]:
             if not self._UI.mouseOnUI(self.mousePositionScreen):

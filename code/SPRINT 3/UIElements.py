@@ -1,7 +1,6 @@
 import pygame
 import pygame_gui
 from simulation import *
-from math import *
 
 
 #------GUI-ELEMENT------
@@ -82,6 +81,7 @@ class GUIElement:
         newElement = pygame_gui.elements.UITextEntryLine(pygame.Rect(*positionTupleIn), self._manager, self._panel, object_id=pygame_gui.core.ObjectID(object_id=f"#{GUITagIn}" if GUITagIn else None, class_id=f"@{GUIClassIn}" if GUIClassIn else None))
         # assign it a custom ID and panel attribute to keep track of it
         newElement.ID = IDIn
+        newElement.sigFigs = 3
         self._elementList.append(newElement)
         return newElement
 
@@ -89,6 +89,38 @@ class GUIElement:
         # make coords relative
         positionTupleOut = self._relativeToAbsolute(positionTupleIn)
         self._makeTextInput(positionTupleOut, IDIn, GUIClassIn, GUITagIn)
+
+    def _makeAttributeBox(self, positionTupleIn, positionTypeIn, textIn, IDIn, GUITextBoxClassIn=None, GUITextBoxTagIn=None, GUITextInputClassIn=None, GUITextInputTagIn=None):
+        if positionTypeIn == "vertical":
+            textBoxPositionTuple = self.multiplyTuples(positionTupleIn, (1,1,1,0.7))
+            textInputPositionTuple = self.addTuples(self.multiplyTuples(positionTupleIn, (1,1,1,0.3)), (0,positionTupleIn[3]*0.7,0,0))
+        elif positionTypeIn == "horizontal":
+            textBoxPositionTuple = self.multiplyTuples(positionTupleIn, (1,1,0.7,1))
+            textInputPositionTuple = self.addTuples(self.multiplyTuples(positionTupleIn, (1,1,0.3,1)), (positionTupleIn[2]*0.7,0,0,0))
+        else:
+            raise ValueError(f"failed to create attributeBox of type {positionTypeIn}.")
+        # make the text box and text input
+        newElement1 = self._makeTextBox(textBoxPositionTuple, textIn, GUITextBoxClassIn, GUITextBoxTagIn)
+        newElement2 = self._makeTextInput(textInputPositionTuple, IDIn, GUITextInputClassIn, GUITextInputTagIn)
+
+        # assign it a custom ID and panel attribute to keep track of it
+        newElement1.ID = IDIn
+        newElement2.ID = IDIn
+        newElement2.sigFigs = 3
+        self._elementList.append(newElement1)
+        self._elementList.append(newElement2)
+        return (newElement1, newElement2)
+
+    def multiplyTuples(self, a, b):
+        return tuple(a*b for a, b in zip(a, b))
+
+    def addTuples(self, a, b):
+            return tuple(a+b for a, b in zip(a, b))
+    
+    def _makeAttributeBoxRelative(self, positionTupleIn, positionTypeIn, textIn, IDIn, GUITextBoxClassIn=None, GUITextBoxTagIn=None, GUITextInputClassIn=None, GUITextInputTagIn=None):
+        # make coords relative
+        positionTupleOut = self._relativeToAbsolute(positionTupleIn)
+        self._makeAttributeBox(positionTupleOut, positionTypeIn, textIn, IDIn, GUITextBoxClassIn=None, GUITextBoxTagIn=None, GUITextInputClassIn=None, GUITextInputTagIn=None)
 
     def _makeTextBox(self, positionTupleIn, textIn, IDIn=None, GUIClassIn=None, GUITagIn=None):
         # make the text box
@@ -142,18 +174,28 @@ class Panel(GUIElement):
     def _makeButton(self, positionTupleIn, textIn, IDIn, GUIClassIn=None, GUITagIn=None):
         newElement = super()._makeButton(positionTupleIn, textIn, IDIn, GUIClassIn, GUITagIn)
         newElement.panel = self._name
+        return newElement
 
     def _makeCheckBox(self, positionTupleIn, textIn, IDIn, GUIClassIn=None, GUITagIn=None):
         newElement = super()._makeCheckBox(positionTupleIn, textIn, IDIn, GUIClassIn, GUITagIn)
         newElement.panel = self._name
+        return newElement
 
     def _makeTextInput(self, positionTupleIn, IDIn, GUIClassIn=None, GUITagIn=None):
         newElement = super()._makeTextInput(positionTupleIn, IDIn, GUIClassIn, GUITagIn)
         newElement.panel = self._name
+        return newElement
+
+    def _makeAttributeBox(self, positionTupleIn, positionTypeIn, textIn, IDIn, GUITextBoxClassIn=None, GUITextBoxTagIn=None, GUITextInputClassIn=None, GUITextInputTagIn=None):
+        newElement = super()._makeAttributeBox(positionTupleIn, positionTypeIn, textIn, IDIn, GUITextBoxClassIn=None, GUITextBoxTagIn=None, GUITextInputClassIn=None, GUITextInputTagIn=None)
+        for element in newElement:
+            element.panel = self._name
+        return newElement
 
     def _makeTextBox(self, positionTupleIn, textIn, IDIn=None, GUIClassIn=None, GUITagIn=None):
         newElement = super()._makeTextBox(positionTupleIn, textIn, IDIn, GUIClassIn, GUITagIn)
         newElement.panel = self._name
+        return newElement
 
     def _makePopup(self, typeIn):
         if typeIn.lower() == "delete":  #widthIn, heightIn, panelNameIn, textIn
@@ -161,6 +203,7 @@ class Panel(GUIElement):
             self._popupList.append(currentPopup)
         else:
             raise ValueError(f"Failed to create popup of type {typeIn}")
+
 
     def removePopup(self, targetPopup):
         targetPopup.delete()
@@ -207,7 +250,7 @@ class ControlPanel(Panel):
                 print("Control button test works!")
             elif ID == "pauseButton":
                 print("Pause button works!")
-                self._simulation.pause()
+                self._simulation.pauseToggle()
             elif ID == "forwardsButton":
                 print("forwards button works!")
                 self._simulation.speedUp()
@@ -222,6 +265,7 @@ class ControlPanel(Panel):
 # SELECTION PANEL
 class SelectionPanel(Panel):
     _name = "selection"
+
     def __init__(self, managerIn, screenIn, UIIn, simulationIn, advancedModeIn=False, hidden=False):
         super().__init__(managerIn, screenIn, UIIn, simulationIn, advancedModeIn, hidden)
 
@@ -242,7 +286,15 @@ class SelectionPanel(Panel):
             self._makeCheckBoxRelative((0.1, 0.1, 40, 40), "Show", "idekreplacethis", "", "")
             self._makeTextInputRelative((0.2, 0.3, 100, 40), "testTextInput")
             self._makeTextInputRelative((0.2, 0.4, 100, 40), "horizontalVelocity")
-            
+            self._makeTextInputRelative((0.2, 0.5, 100, 40), "verticalVelocity")
+            self._makeAttributeBoxRelative((0.5, 0.3, 110, 100), "vertical", "Horizontal velocity:", "horizontalVelocity")
+            self._makeAttributeBoxRelative((0.5, 0.5, 110, 100), "vertical", "Vertical velocity:", "verticalVelocity")
+            self._makeAttributeBoxRelative((0.7, 0.7, 220, 50), "horizontal", "Vertical velocity:", "verticalVelocity")
+
+    def _makeTextInput(self, positionTupleIn, IDIn, GUIClassIn=None, GUITagIn=None):
+        newElement = super()._makeTextInput(positionTupleIn, IDIn, GUIClassIn, GUITagIn)
+        newElement.unfocusPause = False
+        return newElement
 
     def handleEvents(self, event):
         ID = event.ui_element.ID
@@ -271,7 +323,17 @@ class SelectionPanel(Panel):
                     self.confirmDeleteSelection()
             # elif event.type == pygame_gui.UI_TEXT_ENTRY_CHANGED
             elif event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
+                event.ui_element.unfocus()
+                event.ui_element.unfocusPause = True
+                self._simulation.play()
                 print("Entered text:", event.text)
+                print("Altering object attribute now")
+                ID = event.ui_element.ID
+                if ID == "verticalVelocity":
+                    self.selectedObject.velocity[0] = event.text
+                elif ID == "horizontalVelocity":
+                    self.selectedObject.velocity[1] = event.text
+    
 
     def update(self):
         # run each frame and update any elements that update regularly
@@ -279,14 +341,23 @@ class SelectionPanel(Panel):
             if element.visible:
                 if isinstance(element, pygame_gui.elements.UITextEntryLine):
                     if element.is_focused == False:
+                        if element.unfocusPause:
+                            self._simulation.play()
+                            element.unfocusPause = False
                         self.updateTextInput(element)
+                    else:
+                        self._simulation.pause()
+                        element.unfocusPause = True
 
     def updateTextInput(self, elementIn):
-        if elementIn.ID == "testTextInput":
-            print("Test!")
-        elif elementIn.ID == "horizontalVelocity":
-            value = self.selectedObject.velocity[0]
-            elementIn.set_text(round(value, -int(floor(log10(abs(value))))))
+        if elementIn.ID == "horizontalVelocity":
+            elementIn.set_text(self.sigFigs(elementIn.sigFigs, self.selectedObject.velocity[0]))
+        elif elementIn.ID == "verticalVelocity":
+            elementIn.set_text(self.sigFigs(elementIn.sigFigs, self.selectedObject.velocity[1]))
+
+    def sigFigs(self, sigFigs, value):
+        return '%s' % float(f'%.{sigFigs}g' % value)
+
 
     def changeSelected(self, IDIn):
         if IDIn is not None:
@@ -294,7 +365,13 @@ class SelectionPanel(Panel):
             self.selectedObject = self._simulation.findObject(IDIn)
 
     def confirmDeleteSelection(self):
-        self._makePopup("delete")
+        alreadyExists = False
+        # ensuring no popup already exists
+        for popup in self._popupList:
+            if popup.name == "delete":
+                alreadyExists = True
+        if not alreadyExists:
+            self._makePopup("delete")
 
     def deleteSelection(self):
         if self.selectedObject is not None:
@@ -356,6 +433,10 @@ class ConfirmDeletePopup(Popup):
         self._makeTextBoxRelative((0.5, 0.3, 0.8, 0.5), self.text)
         self._makeButtonRelative((0.25, 0.8, 120, 40), "I'm sure", "deleteConfirm", GUIClassIn="red")
         self._makeButtonRelative((0.75, 0.8, 120, 40), "Cancel", "deleteCancel")
+
+    @property
+    def name(self):
+        return self._name
 
 # in handleEvents:
 # if "#test" in event.ui_element.object_ids:

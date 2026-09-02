@@ -22,9 +22,10 @@ class UI:
         self._manager.process_events(event)
         if hasattr(event, "ui_element"):    # checks if the event is UI related
             for panelObject in self._panelList:  # loops through each panel and checks if the event is relevant to the panel
-                if event.ui_element.panel == panelObject._name:
-                    panelObject.handleEvents(event)
-                    break
+                if hasattr(event.ui_element, "panel"):
+                    if event.ui_element.panel == panelObject._name:
+                        panelObject.handleEvents(event)
+                        break
 
     def mouseOnUI(self, mousePosition):
         for panel in self._panelList:
