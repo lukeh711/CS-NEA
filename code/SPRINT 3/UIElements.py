@@ -198,8 +198,12 @@ class Panel(GUIElement):
         return newElement
 
     def _makePopup(self, typeIn):
-        if typeIn.lower() == "delete":  #widthIn, heightIn, panelNameIn, textIn
-            currentPopup = self._UI.makePopup(300, 250, self._name, "Are you sure you want to delete this object?")
+        if typeIn.lower() == "delete":
+            currentPopup = ConfirmDeletePopup(self._manager, self._screen, 300, 250, self._name)
+            self._popupList.append(currentPopup)
+        elif typeIn.lower() == "makeobject":
+            print("Popup made!")
+            currentPopup = MakeObject(self._manager, self._screen, 500, 700, self._name)
             self._popupList.append(currentPopup)
         else:
             raise ValueError(f"Failed to create popup of type {typeIn}")
@@ -245,18 +249,39 @@ class ControlPanel(Panel):
 
     def handleEvents(self, event):
         ID = event.ui_element.ID
-        if event.type == pygame_gui.UI_BUTTON_PRESSED:
+        # popup events
+        if hasattr(event.ui_element, "popup"):
+            # finds popup object, then breaks to leave currentPopup referring to the correct object
+            for currentPopup in self._popupList:
+                if currentPopup._name == event.ui_element.popup:
+                    break
+            
+            # MAKE OBJECT POPUP
+            if event.ui_element.popup == "makeObject":
+                if event.type == pygame_gui.UI_BUTTON_PRESSED:
+                    if ID == "confirm":
+                        newObject = currentPopup.newObject
+                        if newObject:
+                            self._simulation.addObject(newObject)
+                        self.removePopup(currentPopup)
+                    elif ID == "cancel":
+                        self.removePopup(currentPopup)
+
+        # other events
+        elif event.type == pygame_gui.UI_BUTTON_PRESSED:
             if ID == "testButton":
                 print("Control button test works!")
             elif ID == "pauseButton":
-                print("Pause button works!")
                 self._simulation.pauseToggle()
             elif ID == "forwardsButton":
-                print("forwards button works!")
                 self._simulation.speedUp()
             elif ID == "backwardsButton":
-                print("backwards button works!")
                 self._simulation.speedDown()
+            elif ID == "addObject":
+                self._addObject()
+
+    def _addObject(self):
+        self._makePopup("makeObject")
 
     def update(self):
         pass
@@ -308,10 +333,10 @@ class SelectionPanel(Panel):
             # DELETE POPUP
             if event.ui_element.popup == "delete":
                 if event.type == pygame_gui.UI_BUTTON_PRESSED:
-                    if ID == "deleteConfirm":
+                    if ID == "confirm":
                         self.removePopup(currentPopup)
                         self.deleteSelection()
-                    elif ID == "deleteCancel":
+                    elif ID == "cancel":
                         self.removePopup(currentPopup)
 
         #other events
@@ -324,7 +349,7 @@ class SelectionPanel(Panel):
             # elif event.type == pygame_gui.UI_TEXT_ENTRY_CHANGED
             elif event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
                 event.ui_element.unfocus()
-                event.ui_element.unfocusPause = True
+                event.ui_element.unfocusPause = False
                 self._simulation.play()
                 print("Entered text:", event.text)
                 print("Altering object attribute now")
@@ -340,14 +365,14 @@ class SelectionPanel(Panel):
         for element in self._elementList:
             if element.visible:
                 if isinstance(element, pygame_gui.elements.UITextEntryLine):
-                    if element.is_focused == False:
+                    if element.is_focused and element.visible:
+                        self._simulation.pause()
+                        element.unfocusPause = True
+                    else:
                         if element.unfocusPause:
                             self._simulation.play()
                             element.unfocusPause = False
                         self.updateTextInput(element)
-                    else:
-                        self._simulation.pause()
-                        element.unfocusPause = True
 
     def updateTextInput(self, elementIn):
         if elementIn.ID == "horizontalVelocity":
@@ -425,14 +450,30 @@ class Popup(GUIElement):
 class ConfirmDeletePopup(Popup):
     _name = "delete"
 
-    def __init__(self, managerIn, screenIn, widthIn, heightIn, panelNameIn, textIn):
-        self.text = textIn
+    def __init__(self, managerIn, screenIn, widthIn, heightIn, panelNameIn):
         super().__init__(managerIn, screenIn, widthIn, heightIn, panelNameIn)
     
     def _populatePanel(self):
-        self._makeTextBoxRelative((0.5, 0.3, 0.8, 0.5), self.text)
-        self._makeButtonRelative((0.25, 0.8, 120, 40), "I'm sure", "deleteConfirm", GUIClassIn="red")
-        self._makeButtonRelative((0.75, 0.8, 120, 40), "Cancel", "deleteCancel")
+        self._makeTextBoxRelative((0.5, 0.3, 0.8, 0.5), "Are you sure you want to delete this object?")
+        self._makeButtonRelative((0.25, 0.8, 120, 40), "I'm sure", "confirm", GUIClassIn="red")
+        self._makeButtonRelative((0.75, 0.8, 120, 40), "Cancel", "cancel")
+
+    @property
+    def name(self):
+        return self._name
+
+
+class MakeObject(Popup):
+    _name = "makeObject"
+    newObject = None
+
+    def __init__(self, managerIn, screenIn, widthIn, heightIn, panelNameIn):
+        super().__init__(managerIn, screenIn, widthIn, heightIn, panelNameIn)
+    
+    def _populatePanel(self):
+        self._makeTextBoxRelative((0.5, 0.3, 0.8, 0.5), "Delete me!")
+        self._makeButtonRelative((0.25, 0.8, 120, 40), "I'm sure", "confirm", GUIClassIn="red")
+        self._makeButtonRelative((0.75, 0.8, 120, 40), "Cancel", "cancel")
 
     @property
     def name(self):

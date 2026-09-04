@@ -42,9 +42,6 @@ class UI:
         self._selectionPanel.hide()
         self._selectionPanel.changeSelected(None)
 
-    def makePopup(self, widthIn, heightIn, panelNameIn, textIn):
-        return ConfirmDeletePopup(self._manager, self._screen, widthIn, heightIn, panelNameIn, textIn)
-
 
     def update(self, dt):
         self._elementUpdateOperations += self.elementUpdateSpeed
