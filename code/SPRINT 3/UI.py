@@ -4,17 +4,18 @@ from UIElements import *
 class UI:
     elementUpdateSpeed = 1.0    # number of element updates per frame (0.5 means UI elements that change each frame update at half of the framerate of the screen) NOTE: values above 1.0 will be compressed down to 1.0 when rendered by pygame so should be avoided
     _elementUpdateOperations = 0    # the rolling number of .update operations for each panel to do each frame
-    def __init__(self, screenIn, simulationIn):
+    def __init__(self, screenIn, simulationIn, objectManagerIn):
         self._screen = screenIn
         self._simulation = simulationIn
+        self._objectManager = objectManagerIn
         # initialise the GUI library
         self._manager = pygame_gui.UIManager((screenIn.get_width(), screenIn.get_height()), theme_path="UITheme.json")
 
 
     def createUI(self):
         # make panel objects
-        self._controlPanel = ControlPanel(self._manager, self._screen, self, self._simulation)     # bottom panel
-        self._selectionPanel = SelectionPanel(self._manager, self._screen, self, self._simulation, hidden=True)   # right panel
+        self._controlPanel = ControlPanel(self._manager, self._screen, self, self._simulation, self._objectManager)     # bottom panel
+        self._selectionPanel = SelectionPanel(self._manager, self._screen, self, self._simulation, self._objectManager, hidden=True)   # right panel
         self._panelList = [self._controlPanel, self._selectionPanel]
 
 

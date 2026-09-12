@@ -2,6 +2,7 @@ import pygame   # 2 temps
 from vector import *
 from render import *
 from objects import *
+from objectManager import *
 from simulation import *
 from UI import *
 
@@ -59,19 +60,17 @@ class Game:
         self._screen = pygame.display.set_mode((1280, 720))
         self._camera = Camera(self._screen.get_width(), self._screen.get_height())
         self._render = Render(self._camera, self._screen)
-        self._simulation = Simulation()
-        self._UI = UI(self._screen, self._simulation)
+        self._objectManager = ObjectManager()
+        self._simulation = Simulation(self._objectManager)
+        self._UI = UI(self._screen, self._simulation, self._objectManager)
 
         # create the UI elements
         self._UI.createUI()
 
         # add some initial objects into simulation.py
-        testPlanet1 = Planet(IDIn = 0, velocityIn=Vector(0, 1), positionIn=Vector(-1,0), radiusIn=0.1, massIn=3.003e-6)
-        testPlanet2 = Planet(IDIn = 1, velocityIn=Vector(0, -1), positionIn=Vector(1,0), radiusIn=0.1, massIn=3.003e-6, colourIn="red")
-        testPlanet3 = Planet(IDIn = 2, velocityIn=Vector(0, 0), positionIn=Vector(0,0), radiusIn=0.3, massIn=1.0, colourIn="orange")
-        self._simulation.addObject(testPlanet1)
-        self._simulation.addObject(testPlanet2)
-        self._simulation.addObject(testPlanet3)
+        testPlanet1, testPlanet2, testPlanet3 = self._objectManager.instantiatePlanets([(0, Vector(-1,0), 0.1, Vector(0, 1), 3.003e-6, "blue"), (1, Vector(1,0), 0.1, Vector(0, -1), 3.003e-6, "red"), (2, Vector(0,0), 0.3, Vector(0, 0), 1.0, "orange")])
+        planetList = [testPlanet1, testPlanet2, testPlanet3]
+        self._objectManager.addObjects(planetList)
     
 
     #---keyboard inputs---

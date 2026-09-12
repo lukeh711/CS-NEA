@@ -1,24 +1,25 @@
 import pygame
 import pygame_gui
-from simulation import *
+from vector import *
+
 
 
 #------GUI-ELEMENT------
 
 class GUIElement:
-    _elementList = []
     _panel = None
 
     def __init__(self, managerIn, screenIn):
+        self._elementList = []
         self._manager = managerIn
         self._screen = screenIn
 
         self._makePanel()
         self._populatePanel()
 
-    def _makeGUIPanel(self, panelRect):
+    def _makeGUIPanel(self, panelRect, GUITagIn=None, GUIClassIn=None):
         self._x, self._y, self._w, self._h = panelRect
-        self._panel = pygame_gui.elements.UIPanel(panelRect, manager=self._manager)
+        self._panel = pygame_gui.elements.UIPanel(panelRect, manager=self._manager, object_id=pygame_gui.core.ObjectID(object_id=f"#{GUITagIn}" if GUITagIn else None, class_id=f"@{GUIClassIn}" if GUIClassIn else None))
 
 
     # MAKING ELEMENTS
@@ -60,7 +61,7 @@ class GUIElement:
     def _makeButtonRelative(self, positionTupleIn, textIn, IDIn, GUIClassIn=None, GUITagIn=None):
         # make coords relative
         positionTupleOut = self._relativeToAbsolute(positionTupleIn)
-        self._makeButton(positionTupleOut, textIn, IDIn, GUIClassIn, GUITagIn)
+        return self._makeButton(positionTupleOut, textIn, IDIn, GUIClassIn, GUITagIn)
 
     def _makeCheckBox(self, positionTupleIn, textIn, IDIn, GUIClassIn=None, GUITagIn=None):
         # make the checkbox
@@ -74,53 +75,22 @@ class GUIElement:
     def _makeCheckBoxRelative(self, positionTupleIn, textIn, IDIn, GUIClassIn=None, GUITagIn=None):
         # make coords relative
         positionTupleOut = self._relativeToAbsolute(positionTupleIn)
-        self._makeCheckBox(positionTupleOut, textIn, IDIn, GUIClassIn, GUITagIn)
+        return self._makeCheckBox(positionTupleOut, textIn, IDIn, GUIClassIn, GUITagIn)
 
-    def _makeTextInput(self, positionTupleIn, IDIn, GUIClassIn=None, GUITagIn=None):
+    def _makeTextInput(self, positionTupleIn, IDIn, sigFigsIn=3, GUIClassIn=None, GUITagIn=None):
+        # TODO: add a "default value" optional input to ALL defs of maketextinput & maketextinputrelative
         # make the text input
         newElement = pygame_gui.elements.UITextEntryLine(pygame.Rect(*positionTupleIn), self._manager, self._panel, object_id=pygame_gui.core.ObjectID(object_id=f"#{GUITagIn}" if GUITagIn else None, class_id=f"@{GUIClassIn}" if GUIClassIn else None))
         # assign it a custom ID and panel attribute to keep track of it
         newElement.ID = IDIn
-        newElement.sigFigs = 3
+        newElement.sigFigs = sigFigsIn
         self._elementList.append(newElement)
         return newElement
 
-    def _makeTextInputRelative(self, positionTupleIn, IDIn, GUIClassIn=None, GUITagIn=None):
+    def _makeTextInputRelative(self, positionTupleIn, IDIn, sigFigsIn=3, GUIClassIn=None, GUITagIn=None):
         # make coords relative
         positionTupleOut = self._relativeToAbsolute(positionTupleIn)
-        self._makeTextInput(positionTupleOut, IDIn, GUIClassIn, GUITagIn)
-
-    def _makeAttributeBox(self, positionTupleIn, positionTypeIn, textIn, IDIn, GUITextBoxClassIn=None, GUITextBoxTagIn=None, GUITextInputClassIn=None, GUITextInputTagIn=None):
-        if positionTypeIn == "vertical":
-            textBoxPositionTuple = self.multiplyTuples(positionTupleIn, (1,1,1,0.7))
-            textInputPositionTuple = self.addTuples(self.multiplyTuples(positionTupleIn, (1,1,1,0.3)), (0,positionTupleIn[3]*0.7,0,0))
-        elif positionTypeIn == "horizontal":
-            textBoxPositionTuple = self.multiplyTuples(positionTupleIn, (1,1,0.7,1))
-            textInputPositionTuple = self.addTuples(self.multiplyTuples(positionTupleIn, (1,1,0.3,1)), (positionTupleIn[2]*0.7,0,0,0))
-        else:
-            raise ValueError(f"failed to create attributeBox of type {positionTypeIn}.")
-        # make the text box and text input
-        newElement1 = self._makeTextBox(textBoxPositionTuple, textIn, GUITextBoxClassIn, GUITextBoxTagIn)
-        newElement2 = self._makeTextInput(textInputPositionTuple, IDIn, GUITextInputClassIn, GUITextInputTagIn)
-
-        # assign it a custom ID and panel attribute to keep track of it
-        newElement1.ID = IDIn
-        newElement2.ID = IDIn
-        newElement2.sigFigs = 3
-        self._elementList.append(newElement1)
-        self._elementList.append(newElement2)
-        return (newElement1, newElement2)
-
-    def multiplyTuples(self, a, b):
-        return tuple(a*b for a, b in zip(a, b))
-
-    def addTuples(self, a, b):
-            return tuple(a+b for a, b in zip(a, b))
-    
-    def _makeAttributeBoxRelative(self, positionTupleIn, positionTypeIn, textIn, IDIn, GUITextBoxClassIn=None, GUITextBoxTagIn=None, GUITextInputClassIn=None, GUITextInputTagIn=None):
-        # make coords relative
-        positionTupleOut = self._relativeToAbsolute(positionTupleIn)
-        self._makeAttributeBox(positionTupleOut, positionTypeIn, textIn, IDIn, GUITextBoxClassIn=None, GUITextBoxTagIn=None, GUITextInputClassIn=None, GUITextInputTagIn=None)
+        return self._makeTextInput(positionTupleOut, IDIn, sigFigsIn, GUIClassIn, GUITagIn)
 
     def _makeTextBox(self, positionTupleIn, textIn, IDIn=None, GUIClassIn=None, GUITagIn=None):
         # make the text box
@@ -134,7 +104,76 @@ class GUIElement:
     def _makeTextBoxRelative(self, positionTupleIn, textIn, IDIn=None, GUIClassIn=None, GUITagIn=None):
         # make coords relative
         positionTupleOut = self._relativeToAbsolute(positionTupleIn)
-        self._makeTextBox(positionTupleOut, textIn, IDIn, GUIClassIn, GUITagIn)
+        return self._makeTextBox(positionTupleOut, textIn, IDIn, GUIClassIn, GUITagIn)
+
+    def _makeDropDownMenu(self, positionTupleIn, optionsListIn, startingOptionIn, IDIn, GUIClassIn=None, GUITagIn=None):
+        # make the text box
+        newElement = pygame_gui.elements.UIDropDownMenu(optionsListIn, startingOptionIn, pygame.Rect(*positionTupleIn), self._manager, container=self._panel, object_id=pygame_gui.core.ObjectID(object_id=f"#{GUITagIn}" if GUITagIn else None, class_id=f"@{GUIClassIn}" if GUIClassIn else None))
+        # assign it a custom ID and panel attribute to keep track of it
+        if IDIn is not None:
+            newElement.ID = IDIn
+        self._elementList.append(newElement)
+        return newElement
+
+    def _makeDropDownMenuRelative(self, positionTupleIn, optionsListIn, startingOptionIn, IDIn, GUIClassIn=None, GUITagIn=None):
+        positionTupleOut = self._relativeToAbsolute(positionTupleIn)
+        return self._makeDropDownMenu(self, positionTupleOut, optionsListIn, startingOptionIn, IDIn, GUIClassIn, GUITagIn)
+
+    def multiplyTuples(self, a, b):
+        return tuple(a*b for a, b in zip(a, b))
+
+    def addTuples(self, a, b):
+        return tuple(a+b for a, b in zip(a, b))
+
+    def _makeAttributeBox(self, positionTupleIn, positionTypeIn, textIn, IDIn, sigFigsIn=3, GUITextBoxClassIn=None, GUITextBoxTagIn=None, GUITextInputClassIn=None, GUITextInputTagIn=None):
+        if positionTypeIn == "vertical":
+            textBoxPositionTuple = self.multiplyTuples(positionTupleIn, (1,1,1,0.5))
+            textInputPositionTuple = self.addTuples(self.multiplyTuples(positionTupleIn, (1,1,1,0.5)), (0,positionTupleIn[3]*0.5,0,0))
+        elif positionTypeIn == "horizontal":
+            textBoxPositionTuple = self.multiplyTuples(positionTupleIn, (1,1,0.7,1))
+            textInputPositionTuple = self.addTuples(self.multiplyTuples(positionTupleIn, (1,1,0.3,1)), (positionTupleIn[2]*0.7,0,0,0))
+        else:
+            raise ValueError(f"failed to create attributeBox of type {positionTypeIn}.")
+        # make the text box and text input
+        newElement1 = self._makeTextBox(textBoxPositionTuple, textIn, GUITextBoxClassIn, GUITextBoxTagIn)
+        newElement2 = self._makeTextInput(textInputPositionTuple, IDIn, GUITextInputClassIn, GUITextInputTagIn)
+
+        # assign it a custom ID and panel attribute to keep track of it
+        newElement1.ID = IDIn
+        newElement2.ID = IDIn
+        newElement2.sigFigs = sigFigsIn
+        self._elementList.append(newElement1)
+        self._elementList.append(newElement2)
+        return (newElement1, newElement2)
+
+    def _makeAttributeBoxRelative(self, positionTupleIn, positionTypeIn, textIn, IDIn, sigFigsIn=3, GUITextBoxClassIn=None, GUITextBoxTagIn=None, GUITextInputClassIn=None, GUITextInputTagIn=None):
+        # make coords relative
+        positionTupleOut = self._relativeToAbsolute(positionTupleIn)
+        return self._makeAttributeBox(positionTupleOut, positionTypeIn, textIn, IDIn, sigFigsIn, GUITextBoxClassIn, GUITextBoxTagIn, GUITextInputClassIn, GUITextInputTagIn)
+
+    def _makeSelectionBox(self, positionTupleIn, positionTypeIn, textIn, optionsListIn, startingOptionIn, IDIn, GUITextBoxClassIn=None, GUITextBoxTagIn=None, GUIDropDownClassIn=None, GUIDropDownTagIn=None):
+        if positionTypeIn == "vertical":
+            textBoxPositionTuple = self.multiplyTuples(positionTupleIn, (1,1,1,0.5))
+            dropDownPositionTuple = self.addTuples(self.multiplyTuples(positionTupleIn, (1,1,1,0.5)), (0,positionTupleIn[3]*0.5,0,0))
+        elif positionTypeIn == "horizontal":
+            textBoxPositionTuple = self.multiplyTuples(positionTupleIn, (1,1,0.6,1))
+            dropDownPositionTuple = self.addTuples(self.multiplyTuples(positionTupleIn, (1,1,0.4,1)), (positionTupleIn[2]*0.6,0,0,0))
+        else:
+            raise ValueError(f"failed to create attributeBox of type {positionTypeIn}.")
+        # make the text box and text input
+        newElement1 = self._makeTextBox(textBoxPositionTuple, textIn, IDIn, GUITextBoxClassIn, GUITextBoxTagIn)
+        newElement2 = self._makeDropDownMenu(dropDownPositionTuple, optionsListIn, startingOptionIn, IDIn, GUIDropDownClassIn, GUIDropDownTagIn)
+
+        # assign it a custom ID and panel attribute to keep track of it
+        newElement1.ID = IDIn
+        newElement2.ID = IDIn
+        self._elementList.append(newElement1)
+        self._elementList.append(newElement2)
+        return (newElement1, newElement2)
+
+    def _makeSelectionBoxRelative(self, positionTupleIn, positionTypeIn, textIn, optionsListIn, startingOptionIn, IDIn, GUITextBoxClassIn=None, GUITextBoxTagIn=None, GUIDropDownClassIn=None, GUIDropDownTagIn=None):
+        positionTupleOut = self._relativeToAbsolute(positionTupleIn)
+        return self._makeSelectionBox(positionTupleOut, positionTypeIn, textIn, optionsListIn, startingOptionIn, IDIn, GUITextBoxClassIn, GUITextBoxTagIn, GUIDropDownClassIn, GUIDropDownTagIn)
 
     def hide(self):
         self._panel.hide()
@@ -148,17 +187,16 @@ class GUIElement:
 
 
 
-
 #------PANEL------
 
 class Panel(GUIElement):
-    _popupList = []
-
-    def __init__(self, managerIn, screenIn, UIIn, simulationIn, advancedModeIn=False, hidden=False):
+    def __init__(self, managerIn, screenIn, UIIn, simulationIn, objectManagerIn, advancedModeIn=False, hidden=False):
+        self._popupList = []
         self._advancedMode = advancedModeIn
         self._UI = UIIn
         super().__init__(managerIn, screenIn)
         self._simulation = simulationIn
+        self._objectManager = objectManagerIn
 
         if hidden:
             self.hide()
@@ -181,13 +219,13 @@ class Panel(GUIElement):
         newElement.panel = self._name
         return newElement
 
-    def _makeTextInput(self, positionTupleIn, IDIn, GUIClassIn=None, GUITagIn=None):
-        newElement = super()._makeTextInput(positionTupleIn, IDIn, GUIClassIn, GUITagIn)
+    def _makeTextInput(self, positionTupleIn, IDIn, sigFigsIn=3, GUIClassIn=None, GUITagIn=None):
+        newElement = super()._makeTextInput(positionTupleIn, IDIn, sigFigsIn, GUIClassIn, GUITagIn)
         newElement.panel = self._name
         return newElement
 
-    def _makeAttributeBox(self, positionTupleIn, positionTypeIn, textIn, IDIn, GUITextBoxClassIn=None, GUITextBoxTagIn=None, GUITextInputClassIn=None, GUITextInputTagIn=None):
-        newElement = super()._makeAttributeBox(positionTupleIn, positionTypeIn, textIn, IDIn, GUITextBoxClassIn=None, GUITextBoxTagIn=None, GUITextInputClassIn=None, GUITextInputTagIn=None)
+    def _makeAttributeBox(self, positionTupleIn, positionTypeIn, textIn, IDIn, sigFigsIn=3, GUITextBoxClassIn=None, GUITextBoxTagIn=None, GUITextInputClassIn=None, GUITextInputTagIn=None):
+        newElement = super()._makeAttributeBox(positionTupleIn, positionTypeIn, textIn, IDIn, sigFigsIn, GUITextBoxClassIn=None, GUITextBoxTagIn=None, GUITextInputClassIn=None, GUITextInputTagIn=None)
         for element in newElement:
             element.panel = self._name
         return newElement
@@ -197,12 +235,16 @@ class Panel(GUIElement):
         newElement.panel = self._name
         return newElement
 
+    def _makeDropDownMenu(self, positionTupleIn, optionsListIn, startingOptionIn, IDIn, GUIClassIn=None, GUITagIn=None):
+        newElement = super()._makeTextBox(self, positionTupleIn, optionsListIn, startingOptionIn, IDIn, GUIClassIn, GUITagIn)
+        newElement.panel = self._name
+        return newElement
+
     def _makePopup(self, typeIn):
         if typeIn.lower() == "delete":
             currentPopup = ConfirmDeletePopup(self._manager, self._screen, 300, 250, self._name)
             self._popupList.append(currentPopup)
         elif typeIn.lower() == "makeobject":
-            print("Popup made!")
             currentPopup = MakeObject(self._manager, self._screen, 500, 700, self._name)
             self._popupList.append(currentPopup)
         else:
@@ -214,18 +256,24 @@ class Panel(GUIElement):
         self._popupList.remove(targetPopup)
 
     def mouseOnPanel(self, mousePosition):
-        # TODO: add popup box confirmation
-        if self._advancedMode:
-            return self._advancedRect.collidepoint(*mousePosition)
+        # panel click detection
+        if self._advancedMode and self._advancedRect.collidepoint(*mousePosition):
+            return True
+        elif self._rect.collidepoint(*mousePosition):
+            return True
         else:
-            return self._rect.collidepoint(*mousePosition)
+            # popup click detection
+            for popup in self._popupList:
+                if popup.rect.collidepoint(*mousePosition):
+                    return True
+        return False
 
 
 # CONTROL PANEL
 class ControlPanel(Panel):
     _name = "control"
-    def __init__(self, managerIn, screenIn, UIIn, simulationIn, advancedModeIn=False, hidden=False):
-        super().__init__(managerIn, screenIn, UIIn, simulationIn, advancedModeIn, hidden)
+    def __init__(self, managerIn, screenIn, UIIn, simulationIn, objectManagerIn, advancedModeIn=False, hidden=False):
+        super().__init__(managerIn, screenIn, UIIn, simulationIn, objectManagerIn, advancedModeIn, hidden)
 
     def _makePanel(self):
         # define rect objects for this panel
@@ -260,12 +308,16 @@ class ControlPanel(Panel):
             if event.ui_element.popup == "makeObject":
                 if event.type == pygame_gui.UI_BUTTON_PRESSED:
                     if ID == "confirm":
+                        currentPopup.instantiateObject(self._objectManager.instantiateObject)
                         newObject = currentPopup.newObject
                         if newObject:
-                            self._simulation.addObject(newObject)
+                            self._objectManager.addObject(newObject)
                         self.removePopup(currentPopup)
                     elif ID == "cancel":
                         self.removePopup(currentPopup)
+                if event.type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
+                    if ID == "colourSelection":
+                        self.colour = event.text
 
         # other events
         elif event.type == pygame_gui.UI_BUTTON_PRESSED:
@@ -291,8 +343,8 @@ class ControlPanel(Panel):
 class SelectionPanel(Panel):
     _name = "selection"
 
-    def __init__(self, managerIn, screenIn, UIIn, simulationIn, advancedModeIn=False, hidden=False):
-        super().__init__(managerIn, screenIn, UIIn, simulationIn, advancedModeIn, hidden)
+    def __init__(self, managerIn, screenIn, UIIn, simulationIn, objectManagerIn, advancedModeIn=False, hidden=False):
+        super().__init__(managerIn, screenIn, UIIn, simulationIn, objectManagerIn, advancedModeIn, hidden)
 
     def _makePanel(self):
         # define rect objects for this panel
@@ -316,8 +368,8 @@ class SelectionPanel(Panel):
             self._makeAttributeBoxRelative((0.5, 0.5, 110, 100), "vertical", "Vertical velocity:", "verticalVelocity")
             self._makeAttributeBoxRelative((0.7, 0.7, 220, 50), "horizontal", "Vertical velocity:", "verticalVelocity")
 
-    def _makeTextInput(self, positionTupleIn, IDIn, GUIClassIn=None, GUITagIn=None):
-        newElement = super()._makeTextInput(positionTupleIn, IDIn, GUIClassIn, GUITagIn)
+    def _makeTextInput(self, positionTupleIn, IDIn, sigFigsIn=3, GUIClassIn=None, GUITagIn=None):
+        newElement = super()._makeTextInput(positionTupleIn, sigFigsIn, IDIn, GUIClassIn, GUITagIn)
         newElement.unfocusPause = False
         return newElement
 
@@ -339,7 +391,7 @@ class SelectionPanel(Panel):
                     elif ID == "cancel":
                         self.removePopup(currentPopup)
 
-        #other events
+        # other events
         else:
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 if ID == "testButton":
@@ -365,7 +417,7 @@ class SelectionPanel(Panel):
         for element in self._elementList:
             if element.visible:
                 if isinstance(element, pygame_gui.elements.UITextEntryLine):
-                    if element.is_focused and element.visible:
+                    if element.is_focused:
                         self._simulation.pause()
                         element.unfocusPause = True
                     else:
@@ -373,6 +425,7 @@ class SelectionPanel(Panel):
                             self._simulation.play()
                             element.unfocusPause = False
                         self.updateTextInput(element)
+                
 
     def updateTextInput(self, elementIn):
         if elementIn.ID == "horizontalVelocity":
@@ -381,13 +434,12 @@ class SelectionPanel(Panel):
             elementIn.set_text(self.sigFigs(elementIn.sigFigs, self.selectedObject.velocity[1]))
 
     def sigFigs(self, sigFigs, value):
-        return '%s' % float(f'%.{sigFigs}g' % value)
-
+        return f'%.{sigFigs}g' % value
 
     def changeSelected(self, IDIn):
         if IDIn is not None:
             print(f"selected is now {IDIn}")
-            self.selectedObject = self._simulation.findObject(IDIn)
+            self.selectedObject = self._objectManager.findObject(IDIn)
 
     def confirmDeleteSelection(self):
         alreadyExists = False
@@ -400,7 +452,7 @@ class SelectionPanel(Panel):
 
     def deleteSelection(self):
         if self.selectedObject is not None:
-            self._simulation.removeObject(self.selectedObject)
+            self._objectManager.removeObject(self.selectedObject)
         self.hide()
 
 
@@ -420,31 +472,44 @@ class Popup(GUIElement):
     def _makePanel(self):
         self._rect = pygame.Rect(0, 0, self._w, self._h)
         self._rect.center = (self._screen.get_width()//2, self._screen.get_height()//2)
-        self._makeGUIPanel(self._rect)
+        self._makeGUIPanel(self._rect, GUIClassIn="popup")
 
     def _makeButton(self, positionTupleIn, textIn, IDIn, GUIClassIn=None, GUITagIn=None):
         newElement = super()._makeButton(positionTupleIn, textIn, IDIn, GUIClassIn, GUITagIn)
         newElement.panel = self._panelName
         newElement.popup = self._name
+        return newElement
 
     def _makeCheckBox(self, positionTupleIn, textIn, IDIn, GUIClassIn=None, GUITagIn=None):
         newElement = super()._makeCheckBox(positionTupleIn, textIn, IDIn, GUIClassIn, GUITagIn)
         newElement.panel = self._panelName
         newElement.popup = self._name
+        return newElement
 
     def _makeTextInput(self, positionTupleIn, IDIn, GUIClassIn=None, GUITagIn=None):
         newElement = super()._makeTextInput(positionTupleIn, IDIn, GUIClassIn, GUITagIn)
         newElement.panel = self._panelName
         newElement.popup = self._name
+        return newElement
 
     def _makeTextBox(self, positionTupleIn, textIn, IDIn=None, GUIClassIn=None, GUITagIn=None):
         newElement = super()._makeTextBox(positionTupleIn, textIn, IDIn, GUIClassIn, GUITagIn)
         newElement.panel = self._panelName
         newElement.popup = self._name
+        return newElement
+
+    def _makeDropDownMenu(self, positionTupleIn, optionsListIn, startingOptionIn, IDIn, GUIClassIn=None, GUITagIn=None):
+        newElement = super()._makeDropDownMenu(positionTupleIn, optionsListIn, startingOptionIn, IDIn, GUIClassIn=None, GUITagIn=None)
+        newElement.panel = self._panelName
+        newElement.popup = self._name
+        return newElement
 
     def delete(self):
         self._panel.kill()
 
+    @property 
+    def rect(self):
+        return self._rect
 
 
 class ConfirmDeletePopup(Popup):
@@ -467,24 +532,56 @@ class MakeObject(Popup):
     _name = "makeObject"
     newObject = None
 
+    # setting default values
+    objectType = "planet"
+    position = (2, 0)
+    radius = 5
+    velocity = (0, -2)
+    mass = 3.003e-6
+    colour = "red"
+
     def __init__(self, managerIn, screenIn, widthIn, heightIn, panelNameIn):
         super().__init__(managerIn, screenIn, widthIn, heightIn, panelNameIn)
+
+    def instantiateObject(self, instantiateMethod):
+        if self.objectType == "planet":
+            parameters = (self.ID, self.position, self.radius, self.velocity, self.mass, self.colour)
+        instantiateMethod(self.objectType, parameters)
     
     def _populatePanel(self):
-        self._makeTextBoxRelative((0.5, 0.3, 0.8, 0.5), "Delete me!")
-        self._makeButtonRelative((0.25, 0.8, 120, 40), "I'm sure", "confirm", GUIClassIn="red")
-        self._makeButtonRelative((0.75, 0.8, 120, 40), "Cancel", "cancel")
+        # title
+        self._makeTextBoxRelative((0.5, 0.05, 0.6, 40), "Make new object")
+        # object type
+        typeList = ["planet"]
+        self._makeSelectionBoxRelative((0.5, 0.15, 300, 30), "horizontal", "Type", typeList, "planet", "typeSelection")
+        # FOR PLANET SELECTION:
+        # colour
+        colourList = ["red", "orange", "yellow", "green", "blue", "pink", "purple"]
+        self._makeSelectionBoxRelative((0.5, 0.2, 300, 30), "horizontal", "Colour", colourList, "red", "colourSelection")
+        # mass
+        self._makeAttributeBoxRelative((0.5, 0.25, 300, 30), "horizontal", "Mass", "massSelection", sigFigsIn=5)
+
+        # velocity type
+        velocityTypeList = ["coordinates"]
+        self._makeSelectionBoxRelative((0.5, 0.3, 300, 30), "horizontal", "Velocity", velocityTypeList, "coordinates", "positionTypeSelection")
+        # FOR vector
+        # x
+        self._makeAttributeBoxRelative((0.3, 0.4, 130, 80), "vertical", "X component:", "vectorXSelection", sigFigsIn=5)
+        # y
+        self._makeAttributeBoxRelative((0.7, 0.4, 130, 80), "vertical", "Y component:", "vectorYSelection", sigFigsIn=5)
+
+        # position type
+        positionTypeList = ["coordinates"]
+        self._makeSelectionBoxRelative((0.5, 0.5, 300, 30), "horizontal", "Position", positionTypeList, "coordinates", "positionTypeSelection")
+        # FOR COORDINATES
+        # x
+        self._makeAttributeBoxRelative((0.3, 0.6, 130, 80), "vertical", "X coordinate:", "positionXSelection", sigFigsIn=5)
+        # y
+        self._makeAttributeBoxRelative((0.7, 0.6, 130, 80), "vertical", "Y coordinate:", "positionYSelection", sigFigsIn=5)
+
+        self._makeButtonRelative((0.25, 0.9, 120, 40), "I'm sure", "confirm", GUIClassIn="green")
+        self._makeButtonRelative((0.75, 0.9, 120, 40), "Cancel", "cancel")
 
     @property
     def name(self):
         return self._name
-
-# in handleEvents:
-# if "#test" in event.ui_element.object_ids:
-#     print("testing the test!")
-
-# var1.kill() to remove
-# panel1.hide() to hide panel
-# var1 = pygame_GUI.elementspygame_gui.elements.<UIButton>() to create
-# RECT: (XYWH)
-# XY USES PYGAME: TOP LEFT FOR 0
