@@ -19,7 +19,6 @@ class ObjectManager:
         for currentObject in self.objectList:
             if currentObject is objectIn:
                 self.objectList.remove(objectIn)
-                self.nextID -= 1
                 break
 
     def findObject(self, IDIn):
@@ -34,7 +33,10 @@ class ObjectManager:
             raise ValueError(f"ObjectManager could not instantiate object of type {typeIn}")
 
     def instantiatePlanet(self, IDIn, positionIn, radiusIn, velocityIn, massIn, colourIn):
-        return Planet(IDIn, positionIn, radiusIn, velocityIn, massIn, colourIn)
+        newPlanet = Planet(IDIn, positionIn, radiusIn, velocityIn, massIn, colourIn)
+        self.objectList.append(newPlanet)
+        print("appended new planet")
+        return newPlanet
 
     def instantiatePlanets(self, planetParameterListIn):
         returnList = []

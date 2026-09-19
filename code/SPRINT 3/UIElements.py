@@ -190,7 +190,7 @@ class GUIElement:
 #------PANEL------
 
 class Panel(GUIElement):
-    def __init__(self, managerIn, screenIn, UIIn, simulationIn, objectManagerIn, advancedModeIn=False, hidden=False):
+    def __init__(self, managerIn, screenIn, UIIn, simulationIn, objectManagerIn, advancedModeIn=False, hiddenIn=False):
         self._popupList = []
         self._advancedMode = advancedModeIn
         self._UI = UIIn
@@ -198,7 +198,7 @@ class Panel(GUIElement):
         self._simulation = simulationIn
         self._objectManager = objectManagerIn
 
-        if hidden:
+        if hiddenIn:
             self.hide()
 
     def _makeCurrentPanel(self):
@@ -272,8 +272,8 @@ class Panel(GUIElement):
 # CONTROL PANEL
 class ControlPanel(Panel):
     _name = "control"
-    def __init__(self, managerIn, screenIn, UIIn, simulationIn, objectManagerIn, advancedModeIn=False, hidden=False):
-        super().__init__(managerIn, screenIn, UIIn, simulationIn, objectManagerIn, advancedModeIn, hidden)
+    def __init__(self, managerIn, screenIn, UIIn, simulationIn, objectManagerIn, advancedModeIn=False, hiddenIn=False):
+        super().__init__(managerIn, screenIn, UIIn, simulationIn, objectManagerIn, advancedModeIn, hiddenIn)
 
     def _makePanel(self):
         # define rect objects for this panel
@@ -308,7 +308,7 @@ class ControlPanel(Panel):
             if event.ui_element.popup == "makeObject":
                 if event.type == pygame_gui.UI_BUTTON_PRESSED:
                     if ID == "confirm":
-                        currentPopup.instantiateObject(self._objectManager.instantiateObject)
+                        currentPopup.instantiateObject(self._objectManager.nextID, self._objectManager.instantiateObject)
                         newObject = currentPopup.newObject
                         if newObject:
                             self._objectManager.addObject(newObject)
@@ -317,7 +317,29 @@ class ControlPanel(Panel):
                         self.removePopup(currentPopup)
                 if event.type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
                     if ID == "colourSelection":
-                        self.colour = event.text
+                        currentPopup.objectColour = event.text
+                    if ID == "typeSelection":
+                        currentPopup.objectType = event.text
+                    if ID == "massSelection":
+                        currentPopup.objectMass = event.text
+                    if ID == "velocityTypeSelection":
+                        currentPopup.object = event.text
+                    if ID == "vectorXSelection":
+                        currentPopup.object = event.text
+                    if ID == "vectorYSelection":
+                        currentPopup.object = event.text
+                    if ID == "positionXSelection":
+                        currentPopup.object = event.text
+                    if ID == "positionYSelection":
+                        currentPopup.object = event.text
+                    if ID == "":
+                        currentPopup.object = event.text
+                    if ID == "":
+                        currentPopup.object = event.text
+                    if ID == "":
+                        currentPopup.object = event.text
+                    if ID == "":
+                        currentPopup.object = event.text
 
         # other events
         elif event.type == pygame_gui.UI_BUTTON_PRESSED:
@@ -343,8 +365,8 @@ class ControlPanel(Panel):
 class SelectionPanel(Panel):
     _name = "selection"
 
-    def __init__(self, managerIn, screenIn, UIIn, simulationIn, objectManagerIn, advancedModeIn=False, hidden=False):
-        super().__init__(managerIn, screenIn, UIIn, simulationIn, objectManagerIn, advancedModeIn, hidden)
+    def __init__(self, managerIn, screenIn, UIIn, simulationIn, objectManagerIn, advancedModeIn=False, hiddenIn=False):
+        super().__init__(managerIn, screenIn, UIIn, simulationIn, objectManagerIn, advancedModeIn, hiddenIn)
 
     def _makePanel(self):
         # define rect objects for this panel
@@ -534,44 +556,47 @@ class MakeObject(Popup):
 
     # setting default values
     objectType = "planet"
-    position = (2, 0)
-    radius = 5
-    velocity = (0, -2)
-    mass = 3.003e-6
-    colour = "red"
+    objectPosition = Vector(2, 0)
+    objectRadius = 0.1
+    objectVelocity = Vector(0, -2)
+    objectMass = 3.003e-6
+    objectColour = "red"
 
     def __init__(self, managerIn, screenIn, widthIn, heightIn, panelNameIn):
         super().__init__(managerIn, screenIn, widthIn, heightIn, panelNameIn)
 
-    def instantiateObject(self, instantiateMethod):
+    def instantiateObject(self, nextIDIn, instantiateMethod):
         if self.objectType == "planet":
-            parameters = (self.ID, self.position, self.radius, self.velocity, self.mass, self.colour)
+            parameters = (nextIDIn, self.objectPosition, self.objectRadius, self.objectVelocity, self.objectMass, self.objectColour)
         instantiateMethod(self.objectType, parameters)
     
     def _populatePanel(self):
         # title
         self._makeTextBoxRelative((0.5, 0.05, 0.6, 40), "Make new object")
+
         # object type
         typeList = ["planet"]
         self._makeSelectionBoxRelative((0.5, 0.15, 300, 30), "horizontal", "Type", typeList, "planet", "typeSelection")
+
         # FOR PLANET SELECTION:
         # colour
         colourList = ["red", "orange", "yellow", "green", "blue", "pink", "purple"]
         self._makeSelectionBoxRelative((0.5, 0.2, 300, 30), "horizontal", "Colour", colourList, "red", "colourSelection")
+
         # mass
         self._makeAttributeBoxRelative((0.5, 0.25, 300, 30), "horizontal", "Mass", "massSelection", sigFigsIn=5)
 
         # velocity type
-        velocityTypeList = ["coordinates"]
-        self._makeSelectionBoxRelative((0.5, 0.3, 300, 30), "horizontal", "Velocity", velocityTypeList, "coordinates", "positionTypeSelection")
-        # FOR vector
+        velocityTypeList = ["components", "TEMP"]
+        self._makeSelectionBoxRelative((0.5, 0.3, 300, 30), "horizontal", "Velocity", velocityTypeList, "components", "velocityTypeSelection")
+        # FOR components
         # x
         self._makeAttributeBoxRelative((0.3, 0.4, 130, 80), "vertical", "X component:", "vectorXSelection", sigFigsIn=5)
         # y
         self._makeAttributeBoxRelative((0.7, 0.4, 130, 80), "vertical", "Y component:", "vectorYSelection", sigFigsIn=5)
 
         # position type
-        positionTypeList = ["coordinates"]
+        positionTypeList = ["coordinates", "TEMP"]
         self._makeSelectionBoxRelative((0.5, 0.5, 300, 30), "horizontal", "Position", positionTypeList, "coordinates", "positionTypeSelection")
         # FOR COORDINATES
         # x
@@ -579,6 +604,7 @@ class MakeObject(Popup):
         # y
         self._makeAttributeBoxRelative((0.7, 0.6, 130, 80), "vertical", "Y coordinate:", "positionYSelection", sigFigsIn=5)
 
+        # confirm cancel buttons
         self._makeButtonRelative((0.25, 0.9, 120, 40), "I'm sure", "confirm", GUIClassIn="green")
         self._makeButtonRelative((0.75, 0.9, 120, 40), "Cancel", "cancel")
 

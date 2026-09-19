@@ -68,9 +68,8 @@ class Game:
         self._UI.createUI()
 
         # add some initial objects into simulation.py
-        testPlanet1, testPlanet2, testPlanet3 = self._objectManager.instantiatePlanets([(0, Vector(-1,0), 0.1, Vector(0, 1), 3.003e-6, "blue"), (1, Vector(1,0), 0.1, Vector(0, -1), 3.003e-6, "red"), (2, Vector(0,0), 0.3, Vector(0, 0), 1.0, "orange")])
-        planetList = [testPlanet1, testPlanet2, testPlanet3]
-        self._objectManager.addObjects(planetList)
+                                                                                                                                                                                                        # IDIn, positionIn, radiusIn, velocityIn, massIn, colourIn
+        self._objectManager.instantiatePlanets([(0, Vector(-1,0), 0.1, Vector(0, 1), 3.003e-6, "blue"), (1, Vector(1,0), 0.1, Vector(0, -1), 3.003e-6, "red"), (2, Vector(0,0), 0.3, Vector(0, 0), 1.0, "orange")])
     
 
     #---keyboard inputs---
@@ -233,8 +232,8 @@ class Game:
         # SIMULATION LOGIC
         self._simulation.frame(dt, self.framerate)
         # TEMP: remove prints
-        # print(f"CAMERA: Displacement: {self._camera.displacement}, centre: {self._camera.centre}, zoom: {self._camera.zoom}, width: {self._camera.width}, height: {self._camera.height}")
-        # print(f"Simulation speed: {self._simulationSpeed}")
+        # print(f"CAMERA: Centre: ({self._camera.centre[0]}, {self._camera.centre[1]}), zoom: {self._camera.zoom}")
+        # print(f"Simulation speed: {self._simulation._speed}")
 
         self._UI.update(dt)
 

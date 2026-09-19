@@ -15,7 +15,7 @@ class UI:
     def createUI(self):
         # make panel objects
         self._controlPanel = ControlPanel(self._manager, self._screen, self, self._simulation, self._objectManager)     # bottom panel
-        self._selectionPanel = SelectionPanel(self._manager, self._screen, self, self._simulation, self._objectManager, hidden=True)   # right panel
+        self._selectionPanel = SelectionPanel(self._manager, self._screen, self, self._simulation, self._objectManager, hiddenIn=True)   # right panel
         self._panelList = [self._controlPanel, self._selectionPanel]
 
 
