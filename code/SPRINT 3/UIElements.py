@@ -92,7 +92,7 @@ class GUIElement:
         positionTupleOut = self._relativeToAbsolute(positionTupleIn)
         return self._makeTextInput(positionTupleOut, IDIn, sigFigsIn, GUIClassIn, GUITagIn)
 
-    def _makeTextBox(self, positionTupleIn, textIn, IDIn=None, GUIClassIn=None, GUITagIn=None):
+    def _makeTextBox(self, positionTupleIn, textIn, IDIn=None, sigFigsIn=3, GUIClassIn=None, GUITagIn=None):
         # make the text box
         newElement = pygame_gui.elements.UITextBox(textIn, pygame.Rect(*positionTupleIn), self._manager, container=self._panel, object_id=pygame_gui.core.ObjectID(object_id=f"#{GUITagIn}" if GUITagIn else None, class_id=f"@{GUIClassIn}" if GUIClassIn else None))
         # assign it a custom ID and panel attribute to keep track of it
@@ -101,10 +101,10 @@ class GUIElement:
         self._elementList.append(newElement)
         return newElement
 
-    def _makeTextBoxRelative(self, positionTupleIn, textIn, IDIn=None, GUIClassIn=None, GUITagIn=None):
+    def _makeTextBoxRelative(self, positionTupleIn, textIn, IDIn=None, sigFigsIn=3, GUIClassIn=None, GUITagIn=None):
         # make coords relative
         positionTupleOut = self._relativeToAbsolute(positionTupleIn)
-        return self._makeTextBox(positionTupleOut, textIn, IDIn, GUIClassIn, GUITagIn)
+        return self._makeTextBox(positionTupleOut, textIn, IDIn, sigFigsIn, GUIClassIn, GUITagIn)
 
     def _makeDropDownMenu(self, positionTupleIn, optionsListIn, startingOptionIn, IDIn, GUIClassIn=None, GUITagIn=None):
         # make the text box
@@ -135,8 +135,8 @@ class GUIElement:
         else:
             raise ValueError(f"failed to create attributeBox of type {positionTypeIn}.")
         # make the text box and text input
-        newElement1 = self._makeTextBox(textBoxPositionTuple, textIn, GUITextBoxClassIn, GUITextBoxTagIn)
-        newElement2 = self._makeTextInput(textInputPositionTuple, IDIn, GUITextInputClassIn, GUITextInputTagIn)
+        newElement1 = self._makeTextBox(textBoxPositionTuple, textIn, IDIn, GUIClassIn=GUITextBoxClassIn, GUITagIn=GUITextBoxTagIn)
+        newElement2 = self._makeTextInput(textInputPositionTuple, IDIn, sigFigsIn, GUITextInputClassIn, GUITextInputTagIn)
 
         # assign it a custom ID and panel attribute to keep track of it
         newElement1.ID = IDIn
@@ -225,7 +225,7 @@ class Panel(GUIElement):
         return newElement
 
     def _makeAttributeBox(self, positionTupleIn, positionTypeIn, textIn, IDIn, sigFigsIn=3, GUITextBoxClassIn=None, GUITextBoxTagIn=None, GUITextInputClassIn=None, GUITextInputTagIn=None):
-        newElement = super()._makeAttributeBox(positionTupleIn, positionTypeIn, textIn, IDIn, sigFigsIn, GUITextBoxClassIn=None, GUITextBoxTagIn=None, GUITextInputClassIn=None, GUITextInputTagIn=None)
+        newElement = super()._makeAttributeBox(positionTupleIn, positionTypeIn, textIn, IDIn, sigFigsIn, GUITextBoxClassIn, GUITextBoxTagIn, GUITextInputClassIn, GUITextInputTagIn)
         for element in newElement:
             element.panel = self._name
         return newElement
@@ -277,7 +277,7 @@ class ControlPanel(Panel):
 
     def _makePanel(self):
         # define rect objects for this panel
-        self._rect = pygame.Rect(0, 0, self._screen.get_width(), 150)
+        self._rect = pygame.Rect(0, 0, self._screen.get_width(), 130)
         self._rect.bottomleft = (0, self._screen.get_height())
         self._advancedRect = self._rect.copy()  # advanced panel is the same size as normal for now
         self._makeCurrentPanel()
@@ -288,11 +288,12 @@ class ControlPanel(Panel):
         else:
             # self._makeButton((20, 10, 100, 40), "Test", "testButton")
             #                                             text, ID, GUI class, GUI ID
-            self._makeButtonRelative((0.1, 0.5, 100, 40), "", "backwardsButton", "image", "backwards")
-            self._makeButtonRelative((0.2, 0.5, 100, 40), "", "pauseButton", "image", "play")
-            self._makeButtonRelative((0.3, 0.5, 100, 40), "", "forwardsButton", "image", "forwards")
-            self._makeButtonRelative((0.8, 0.5, 100, 40), "Add Object", "addObject", "green")
-            self._makeButtonRelative((0.9, 0.5, 100, 40), "New Graph", "newGraph", "green")
+            self._makeAttributeBoxRelative((0.2, 0.3, 250, 40), "horizontal", "Simulation speed:", "simulationSpeed", GUITextBoxClassIn="transparent")
+            self._makeButtonRelative((0.1, 0.7, 100, 40), "", "backwardsButton", "image", "backwards")
+            self._makeButtonRelative((0.2, 0.7, 100, 40), "", "pauseButton", "image", "play")
+            self._makeButtonRelative((0.3, 0.7, 100, 40), "", "forwardsButton", "image", "forwards")
+            self._makeButtonRelative((0.8, 0.7, 100, 40), "Add Object", "addObject", "green")
+            self._makeButtonRelative((0.9, 0.7, 100, 40), "New Graph", "newGraph", "green")
 
 
     def handleEvents(self, event):
@@ -318,27 +319,47 @@ class ControlPanel(Panel):
                 if event.type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
                     if ID == "colourSelection":
                         currentPopup.objectColour = event.text
-                    if ID == "typeSelection":
+                    elif ID == "typeSelection":
                         currentPopup.objectType = event.text
-                    if ID == "massSelection":
-                        currentPopup.objectMass = event.text
-                    if ID == "velocityTypeSelection":
+                    elif ID == "massSelection":
+                        try:
+                            float(event.text)
+                            currentPopup.objectMass = event.text
+                        except:
+                            print(f"Cannot parse value {event.text} as a float")
+                    elif ID == "velocityTypeSelection":
                         currentPopup.object = event.text
-                    if ID == "vectorXSelection":
+                    elif ID == "vectorXSelection":
+                        try:
+                            float(event.text)
+                            currentPopup.objectVelocity[0] = event.text
+                        except:
+                            print(f"Cannot parse value {event.text} as a float")
+                    elif ID == "vectorYSelection":
+                        try:
+                            float(event.text)
+                            currentPopup.objectVelocity[1] = event.text
+                        except:
+                            print(f"Cannot parse value {event.text} as a float")
+                    elif ID == "positionXSelection":
+                        try:
+                            float(event.text)
+                            currentPopup.objectPosition[0] = event.text
+                        except:
+                            print(f"Cannot parse value {event.text} as a float")
+                    elif ID == "positionYSelection":
+                        try:
+                            float(event.text)
+                            currentPopup.objectPosition[1] = event.text
+                        except:
+                            print(f"Cannot parse value {event.text} as a float")
+                    elif ID == "":
                         currentPopup.object = event.text
-                    if ID == "vectorYSelection":
+                    elif ID == "":
                         currentPopup.object = event.text
-                    if ID == "positionXSelection":
+                    elif ID == "":
                         currentPopup.object = event.text
-                    if ID == "positionYSelection":
-                        currentPopup.object = event.text
-                    if ID == "":
-                        currentPopup.object = event.text
-                    if ID == "":
-                        currentPopup.object = event.text
-                    if ID == "":
-                        currentPopup.object = event.text
-                    if ID == "":
+                    elif ID == "":
                         currentPopup.object = event.text
 
         # other events
@@ -353,12 +374,42 @@ class ControlPanel(Panel):
                 self._simulation.speedDown()
             elif ID == "addObject":
                 self._addObject()
+        elif event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
+            self._manager.set_focus_set(None)
+            event.ui_element.unfocusPause = False
+            self._simulation.play()
+            # TEMP print statements here
+            print("Entered text:", event.text)
+            print("Altering object attribute now")
+            ID = event.ui_element.ID
+            if ID == "simulationSpeed":
+                self._simulation.setSpeed(float(event.text))
 
     def _addObject(self):
         self._makePopup("makeObject")
 
     def update(self):
-        pass
+        for element in self._elementList:
+            if element.visible:
+                if isinstance(element, pygame_gui.elements.UITextEntryLine):
+                    if element.is_focused:
+                        self._simulation.pause()
+                        element.unfocusPause = True
+                    else:
+                        try:
+                            if element.unfocusPause:
+                                self._simulation.play()
+                                element.unfocusPause = False
+                        except:
+                            element.unfocusPause = False
+                        self.updateTextInput(element)
+
+    def updateTextInput(self, elementIn):
+        if elementIn.ID == "simulationSpeed":
+            elementIn.set_text(self.sigFigs(elementIn.sigFigs, self._simulation.speed))
+
+    def sigFigs(self, sigFigs, value):
+            return f'%.{sigFigs}g' % value
 
 
 # SELECTION PANEL
@@ -381,14 +432,12 @@ class SelectionPanel(Panel):
         else:
             # self._makeButton((20, 10, 100, 40), "Test", "testButton")
             #                                       rect, (text), ID, (GUI class), (GUI ID)
+            self._makeCheckBoxRelative((0.1, 0.1, 40, 40), "Show overlays", "overlaysToggle", "", "")
+            self._makeAttributeBoxRelative((0.5, 0.2, 300, 50), "horizontal", "Horizontal velocity:", "horizontalVelocity")
+            self._makeAttributeBoxRelative((0.5, 0.3, 300, 50), "horizontal", "Vertical velocity:", "verticalVelocity")
+            self._makeAttributeBoxRelative((0.5, 0.4, 300, 50), "horizontal", "Horizontal position:", "horizontalPosition")
+            self._makeAttributeBoxRelative((0.5, 0.5, 300, 50), "horizontal", "Vertical position:", "verticalPosition")
             self._makeButtonRelative((0.25, 0.9, 120, 40), "Delete object", "deleteObject", "red", "")
-            self._makeCheckBoxRelative((0.1, 0.1, 40, 40), "Show", "idekreplacethis", "", "")
-            self._makeTextInputRelative((0.2, 0.3, 100, 40), "testTextInput")
-            self._makeTextInputRelative((0.2, 0.4, 100, 40), "horizontalVelocity")
-            self._makeTextInputRelative((0.2, 0.5, 100, 40), "verticalVelocity")
-            self._makeAttributeBoxRelative((0.5, 0.3, 110, 100), "vertical", "Horizontal velocity:", "horizontalVelocity")
-            self._makeAttributeBoxRelative((0.5, 0.5, 110, 100), "vertical", "Vertical velocity:", "verticalVelocity")
-            self._makeAttributeBoxRelative((0.7, 0.7, 220, 50), "horizontal", "Vertical velocity:", "verticalVelocity")
 
     def _makeTextInput(self, positionTupleIn, IDIn, sigFigsIn=3, GUIClassIn=None, GUITagIn=None):
         newElement = super()._makeTextInput(positionTupleIn, sigFigsIn, IDIn, GUIClassIn, GUITagIn)
@@ -420,17 +469,17 @@ class SelectionPanel(Panel):
                     print("Selection button test works!")
                 if ID == "deleteObject":
                     self.confirmDeleteSelection()
-            # elif event.type == pygame_gui.UI_TEXT_ENTRY_CHANGED
             elif event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
-                event.ui_element.unfocus()
+                self._manager.set_focus_set(None)
                 event.ui_element.unfocusPause = False
                 self._simulation.play()
+                # TEMP print statements here
                 print("Entered text:", event.text)
                 print("Altering object attribute now")
                 ID = event.ui_element.ID
-                if ID == "verticalVelocity":
+                if ID == "horizontalVelocity":
                     self.selectedObject.velocity[0] = event.text
-                elif ID == "horizontalVelocity":
+                elif ID == "verticalVelocity":
                     self.selectedObject.velocity[1] = event.text
     
 
@@ -454,6 +503,10 @@ class SelectionPanel(Panel):
             elementIn.set_text(self.sigFigs(elementIn.sigFigs, self.selectedObject.velocity[0]))
         elif elementIn.ID == "verticalVelocity":
             elementIn.set_text(self.sigFigs(elementIn.sigFigs, self.selectedObject.velocity[1]))
+        elif elementIn.ID == "horizontalPosition":
+            elementIn.set_text(self.sigFigs(elementIn.sigFigs, self.selectedObject.position[0]))
+        elif elementIn.ID == "verticalPosition":
+            elementIn.set_text(self.sigFigs(elementIn.sigFigs, self.selectedObject.position[1]))
 
     def sigFigs(self, sigFigs, value):
         return f'%.{sigFigs}g' % value
